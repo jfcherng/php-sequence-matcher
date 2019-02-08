@@ -1,0 +1,13 @@
+# some IDE things
+*.cache
+.idea/
+.tags*
+/.web-server-pid
+**/oracle.sqlite
+
+# composer
+vendor/
+
+# tmp files
+/var/*
+!/var/.gitkeep
