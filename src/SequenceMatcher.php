@@ -13,10 +13,17 @@ namespace Jfcherng\Diff;
  */
 final class SequenceMatcher
 {
-    const OPCODE_DELETE = 'del';
+    // people may prefer this for debugging
     const OPCODE_EQUAL = 'eq';
+    const OPCODE_DELETE = 'del';
     const OPCODE_INSERT = 'ins';
     const OPCODE_REPLACE = 'rep';
+
+    // people may prefer this for bit operations
+    const OPCODE_INT_EQUAL = 1 << 0;
+    const OPCODE_INT_DELETE = 1 << 1;
+    const OPCODE_INT_INSERT = 1 << 2;
+    const OPCODE_INT_REPLACE = 1 << 3;
 
     /**
      * @var null|callable either a string or an array containing a callback function to determine if a line is "junk" or not
@@ -34,7 +41,7 @@ final class SequenceMatcher
     private $b = [];
 
     /**
-     * @var array Array of characters that are considered junk from the second sequence. Characters are the array key.
+     * @var array array of characters that are considered junk from the second sequence. Characters are the array key.
      */
     private $junkDict = [];
 
@@ -54,6 +61,17 @@ final class SequenceMatcher
     private static $defaultOptions = [
         'ignoreWhitespace' => false,
         'ignoreCase' => false,
+        'useIntOpcodes' => false,
+    ];
+
+    /**
+     * @var array opcode constants
+     */
+    private $ops = [
+        // 'eq' => ?,
+        // 'del' => ?,
+        // 'ins' => ?,
+        // 'rep' => ?,
     ];
 
     /**
@@ -67,7 +85,7 @@ final class SequenceMatcher
     private $matchingBlocks = [];
 
     /**
-     * @var array
+     * @var array generated opcodes which manipulates seq1 to seq2
      */
     private $opcodes = [];
 
@@ -97,7 +115,23 @@ final class SequenceMatcher
      */
     public function setOptions(array $options): self
     {
-        $this->options = $options + static::$defaultOptions;
+        $this->options = $options + self::$defaultOptions;
+
+        $this->setOps($this->options['useIntOpcodes']);
+        $this->resetchedResults();
+
+        return $this;
+    }
+
+    /**
+     * Reset cached results.
+     *
+     * @return self
+     */
+    public function resetchedResults(): self
+    {
+        $this->matchingBlocks = [];
+        $this->opcodes = [];
 
         return $this;
     }
@@ -129,8 +163,7 @@ final class SequenceMatcher
     {
         if ($this->a !== $a) {
             $this->a = $a;
-            $this->matchingBlocks = [];
-            $this->opcodes = [];
+            $this->resetchedResults();
         }
 
         return $this;
@@ -148,13 +181,23 @@ final class SequenceMatcher
     {
         if ($this->b !== $b) {
             $this->b = $b;
-            $this->matchingBlocks = [];
-            $this->opcodes = [];
+            $this->resetchedResults();
+
             $this->fullBCount = [];
             $this->chainB();
         }
 
         return $this;
+    }
+
+    /**
+     * Get the ops.
+     *
+     * @return array the ops
+     */
+    public function getOps(): array
+    {
+        return $this->ops;
     }
 
     /**
@@ -403,11 +446,11 @@ final class SequenceMatcher
 
         foreach ($this->getMatchingBlocks() as [$ai, $bj, $size]) {
             if ($i < $ai && $j < $bj) {
-                $tag = static::OPCODE_REPLACE;
+                $tag = $this->ops['rep'];
             } elseif ($i < $ai) {
-                $tag = static::OPCODE_DELETE;
+                $tag = $this->ops['del'];
             } elseif ($j < $bj) {
-                $tag = static::OPCODE_INSERT;
+                $tag = $this->ops['ins'];
             } else {
                 $tag = null;
             }
@@ -420,7 +463,7 @@ final class SequenceMatcher
             $j = $bj + $size;
 
             if ($size) {
-                $this->opcodes[] = [static::OPCODE_EQUAL, $ai, $i, $bj, $j];
+                $this->opcodes[] = [$this->ops['eq'], $ai, $i, $bj, $j];
             }
         }
 
@@ -448,11 +491,11 @@ final class SequenceMatcher
 
         if (empty($opcodes)) {
             $opcodes = [
-                [static::OPCODE_EQUAL, 0, 1, 0, 1],
+                [$this->ops['eq'], 0, 1, 0, 1],
             ];
         }
 
-        if ($opcodes[0][0] === static::OPCODE_EQUAL) {
+        if ($opcodes[0][0] === $this->ops['eq']) {
             $opcodes[0] = [
                 $opcodes[0][0],
                 \max($opcodes[0][1], $opcodes[0][2] - $context),
@@ -463,7 +506,7 @@ final class SequenceMatcher
         }
 
         $lastItem = \count($opcodes) - 1;
-        if ($opcodes[$lastItem][0] === static::OPCODE_EQUAL) {
+        if ($opcodes[$lastItem][0] === $this->ops['eq']) {
             [$tag, $i1, $i2, $j1, $j2] = $opcodes[$lastItem];
             $opcodes[$lastItem] = [
                 $tag,
@@ -477,7 +520,7 @@ final class SequenceMatcher
         $maxRange = $context << 1;
         $groups = $group = [];
         foreach ($opcodes as [$tag, $i1, $i2, $j1, $j2]) {
-            if ($tag === static::OPCODE_EQUAL && $i2 - $i1 > $maxRange) {
+            if ($tag === $this->ops['eq'] && $i2 - $i1 > $maxRange) {
                 $group[] = [
                     $tag,
                     $i1,
@@ -496,7 +539,7 @@ final class SequenceMatcher
 
         if (
             !empty($group) &&
-            (\count($group) !== 1 || $group[0][0] !== static::OPCODE_EQUAL)
+            (\count($group) !== 1 || $group[0][0] !== $this->ops['eq'])
         ) {
             $groups[] = $group;
         }
@@ -527,6 +570,36 @@ final class SequenceMatcher
         }
 
         return $this->calculateRatio($matchesCount, \count($this->a) + \count($this->b));
+    }
+
+    /**
+     * Set the ops.
+     *
+     * @param bool $useIntOpcodes to use int opcodes or not
+     *
+     * @return self
+     */
+    private function setOps(bool $useIntOpcodes): self
+    {
+        if ($useIntOpcodes) {
+            $this->ops = [
+                'del' => self::OPCODE_INT_DELETE,
+                'eq' => self::OPCODE_INT_EQUAL,
+                'ins' => self::OPCODE_INT_INSERT,
+                'rep' => self::OPCODE_INT_REPLACE,
+            ];
+        } else {
+            $this->ops = [
+                'del' => self::OPCODE_DELETE,
+                'eq' => self::OPCODE_EQUAL,
+                'ins' => self::OPCODE_INSERT,
+                'rep' => self::OPCODE_REPLACE,
+            ];
+        }
+
+        $this->resetchedResults();
+
+        return $this;
     }
 
     /**

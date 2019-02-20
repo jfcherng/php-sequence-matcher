@@ -24,7 +24,12 @@ class SequenceMatcherTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->sm = new SequenceMatcher([], []);
+        $this->sm = new SequenceMatcher(
+            [],
+            [],
+            null,
+            ['useIntOpcodes' => false]
+        );
     }
 
     /**
