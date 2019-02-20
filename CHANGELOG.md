@@ -2,6 +2,11 @@
 ## VERSION 2  AFTERNOON
 
  * Version **2.0** - afternoon
+   * 2019-02-21 04:56  **2.0.1**  remove dead codes
+      * 09186cb Make SequenceMatcher::linesAreDifferent() private
+      * 4a7ca55 Remove unused codes
+      * 58f2016 nits
+      * fe0974d Fix a typo
    * 2019-02-20 14:45  **2.0.0**  initial release
       * 9336cf3 [BC break] Make constants name shorter
       * 3c86b71 Add ability to generate int opcodes
