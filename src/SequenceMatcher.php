@@ -14,16 +14,16 @@ namespace Jfcherng\Diff;
 final class SequenceMatcher
 {
     // people may prefer this for debugging
-    const OPCODE_EQUAL = 'eq';
-    const OPCODE_DELETE = 'del';
-    const OPCODE_INSERT = 'ins';
-    const OPCODE_REPLACE = 'rep';
+    const OP_EQ = 'eq';
+    const OP_DEL = 'del';
+    const OP_INS = 'ins';
+    const OP_REP = 'rep';
 
     // people may prefer this for bit operations
-    const OPCODE_INT_EQUAL = 1 << 0;
-    const OPCODE_INT_DELETE = 1 << 1;
-    const OPCODE_INT_INSERT = 1 << 2;
-    const OPCODE_INT_REPLACE = 1 << 3;
+    const OP_INT_EQ = 1 << 0;
+    const OP_INT_DEL = 1 << 1;
+    const OP_INT_INS = 1 << 2;
+    const OP_INT_REP = 1 << 3;
 
     /**
      * @var null|callable either a string or an array containing a callback function to determine if a line is "junk" or not
@@ -583,17 +583,17 @@ final class SequenceMatcher
     {
         if ($useIntOpcodes) {
             $this->ops = [
-                'del' => self::OPCODE_INT_DELETE,
-                'eq' => self::OPCODE_INT_EQUAL,
-                'ins' => self::OPCODE_INT_INSERT,
-                'rep' => self::OPCODE_INT_REPLACE,
+                'del' => self::OP_INT_DEL,
+                'eq' => self::OP_INT_EQ,
+                'ins' => self::OP_INT_INS,
+                'rep' => self::OP_INT_REP,
             ];
         } else {
             $this->ops = [
-                'del' => self::OPCODE_DELETE,
-                'eq' => self::OPCODE_EQUAL,
-                'ins' => self::OPCODE_INSERT,
-                'rep' => self::OPCODE_REPLACE,
+                'del' => self::OP_DEL,
+                'eq' => self::OP_EQ,
+                'ins' => self::OP_INS,
+                'rep' => self::OP_REP,
             ];
         }
 
