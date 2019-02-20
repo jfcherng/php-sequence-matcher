@@ -548,31 +548,6 @@ final class SequenceMatcher
     }
 
     /**
-     * Return a measure of the similarity between the two sequences.
-     * This will be a float value between 0 and 1.
-     *
-     * Out of all of the ratio calculation functions, this is the most
-     * expensive to call if getMatchingBlocks or getOpcodes is yet to be
-     * called. The other calculation methods (quickRatio and realQuickRatio)
-     * can be used to perform quicker calculations but may be less accurate.
-     *
-     * The ratio is calculated as (2 * number of matches) / total number of
-     * elements in both sequences.
-     *
-     * @return float the calculated ratio
-     */
-    public function ratio(): float
-    {
-        $matchesCount = 0;
-
-        foreach ($this->getMatchingBlocks() as $block) {
-            $matchesCount += $block[\count($block) - 1];
-        }
-
-        return $this->calculateRatio($matchesCount, \count($this->a) + \count($this->b));
-    }
-
-    /**
      * Set the ops.
      *
      * @param bool $useIntOpcodes to use int opcodes or not
@@ -668,66 +643,5 @@ final class SequenceMatcher
     private function isBJunk(string $b): bool
     {
         return isset($this->junkDict[$b]);
-    }
-
-    /**
-     * Quickly return an upper bound ratio for the similarity of the strings.
-     * This is quicker to compute than ratio().
-     *
-     * @return float the calculated ratio
-     */
-    private function quickRatio(): float
-    {
-        $aCount = \count($this->a);
-        $bCount = \count($this->b);
-
-        if (empty($this->fullBCount)) {
-            for ($i = 0; $i < $bCount; ++$i) {
-                $char = $this->b[$i];
-                $this->fullBCount[$char] = ($this->fullBCount[$char] ?? 0) + 1;
-            }
-        }
-
-        $avail = [];
-        $matchesCount = 0;
-        for ($i = 0; $i < $aCount; ++$i) {
-            $char = $this->a[$i];
-            $numb = $avail[$char] ?? ($this->fullBCount[$char] ?? 0);
-            $avail[$char] = $numb - 1;
-
-            if ($numb > 0) {
-                ++$matchesCount;
-            }
-        }
-
-        return $this->calculateRatio($matchesCount, $aCount + $bCount);
-    }
-
-    /**
-     * Return an upper bound ratio really quickly for the similarity of the strings.
-     * This is quicker to compute than ratio() and quickRatio().
-     *
-     * @return float the calculated ratio
-     */
-    private function realQuickRatio(): float
-    {
-        $aCount = \count($this->a);
-        $bCount = \count($this->b);
-
-        return $this->calculateRatio(\min($aCount, $bCount), $aCount + $bCount);
-    }
-
-    /**
-     * Helper function for calculating the ratio to measure similarity for the strings.
-     * The ratio is defined as being 2 * (number of matches / total length).
-     *
-     * @param int $matchesCount the number of matches in the two strings
-     * @param int $length       the length of the two strings
-     *
-     * @return float the calculated ratio
-     */
-    private function calculateRatio(int $matchesCount, int $length = 0): float
-    {
-        return $length ? ($matchesCount << 1) / $length : 1;
     }
 }
