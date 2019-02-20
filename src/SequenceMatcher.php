@@ -118,7 +118,7 @@ final class SequenceMatcher
         $this->options = $options + self::$defaultOptions;
 
         $this->setOps($this->options['useIntOpcodes']);
-        $this->resetchedResults();
+        $this->resetCachedResults();
 
         return $this;
     }
@@ -128,7 +128,7 @@ final class SequenceMatcher
      *
      * @return self
      */
-    public function resetchedResults(): self
+    public function resetCachedResults(): self
     {
         $this->matchingBlocks = [];
         $this->opcodes = [];
@@ -163,7 +163,7 @@ final class SequenceMatcher
     {
         if ($this->a !== $a) {
             $this->a = $a;
-            $this->resetchedResults();
+            $this->resetCachedResults();
         }
 
         return $this;
@@ -181,7 +181,7 @@ final class SequenceMatcher
     {
         if ($this->b !== $b) {
             $this->b = $b;
-            $this->resetchedResults();
+            $this->resetCachedResults();
 
             $this->fullBCount = [];
             $this->chainB();
@@ -597,7 +597,7 @@ final class SequenceMatcher
             ];
         }
 
-        $this->resetchedResults();
+        $this->resetCachedResults();
 
         return $this;
     }
