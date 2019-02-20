@@ -314,10 +314,10 @@ final class SequenceMatcher
         $lineB = $this->b[$bIndex];
 
         if ($this->options['ignoreWhitespace']) {
-            static $replace = ["\t", ' '];
+            static $whitespaces = ["\t", ' '];
 
-            $lineA = \str_replace($replace, '', $lineA);
-            $lineB = \str_replace($replace, '', $lineB);
+            $lineA = \str_replace($whitespaces, '', $lineA);
+            $lineB = \str_replace($whitespaces, '', $lineB);
         }
 
         if ($this->options['ignoreCase']) {
