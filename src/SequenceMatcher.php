@@ -301,34 +301,6 @@ final class SequenceMatcher
     }
 
     /**
-     * Check if the two lines at the given indexes are different or not.
-     *
-     * @param int $aIndex line number to check against in a
-     * @param int $bIndex line number to check against in b
-     *
-     * @return bool true if the lines are different and false if not
-     */
-    public function linesAreDifferent(int $aIndex, int $bIndex): bool
-    {
-        $lineA = $this->a[$aIndex];
-        $lineB = $this->b[$bIndex];
-
-        if ($this->options['ignoreWhitespace']) {
-            static $whitespaces = ["\t", ' '];
-
-            $lineA = \str_replace($whitespaces, '', $lineA);
-            $lineB = \str_replace($whitespaces, '', $lineB);
-        }
-
-        if ($this->options['ignoreCase']) {
-            $lineA = \strtolower($lineA);
-            $lineB = \strtolower($lineB);
-        }
-
-        return $lineA !== $lineB;
-    }
-
-    /**
      * Return a nested set of arrays for all of the matching sub-sequences
      * in the strings $a and $b.
      *
@@ -575,6 +547,34 @@ final class SequenceMatcher
         $this->resetCachedResults();
 
         return $this;
+    }
+
+    /**
+     * Check if the two lines at the given indexes are different or not.
+     *
+     * @param int $aIndex line number to check against in a
+     * @param int $bIndex line number to check against in b
+     *
+     * @return bool true if the lines are different and false if not
+     */
+    private function linesAreDifferent(int $aIndex, int $bIndex): bool
+    {
+        $lineA = $this->a[$aIndex];
+        $lineB = $this->b[$bIndex];
+
+        if ($this->options['ignoreWhitespace']) {
+            static $whitespaces = ["\t", ' '];
+
+            $lineA = \str_replace($whitespaces, '', $lineA);
+            $lineB = \str_replace($whitespaces, '', $lineB);
+        }
+
+        if ($this->options['ignoreCase']) {
+            $lineA = \strtolower($lineA);
+            $lineB = \strtolower($lineB);
+        }
+
+        return $lineA !== $lineB;
     }
 
     /**
