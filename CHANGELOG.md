@@ -1,4 +1,11 @@
 
+## VERSION 3  LIGHTNING
+
+ * Version **3.0** - LIGHTNING
+   * 2019-02-22 01:27  **3.0.0**  initial release
+      * fc7d2eb Always use int OP
+      * 65a2f64 Update deps
+
 ## VERSION 2  AFTERNOON
 
  * Version **2.0** - afternoon
