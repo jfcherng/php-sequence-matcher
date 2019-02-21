@@ -24,12 +24,7 @@ class SequenceMatcherTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->sm = new SequenceMatcher(
-            [],
-            [],
-            null,
-            ['useIntOpcodes' => false]
-        );
+        $this->sm = new SequenceMatcher([], []);
     }
 
     /**
@@ -57,10 +52,10 @@ EOT
                 ,
                 [
                     [
-                        ['eq', 0, 1, 0, 1],
-                        ['del', 1, 2, 1, 1],
-                        ['eq', 2, 4, 1, 3],
-                        ['ins', 4, 4, 3, 4],
+                        [SequenceMatcher::OP_EQ, 0, 1, 0, 1],
+                        [SequenceMatcher::OP_DEL, 1, 2, 1, 1],
+                        [SequenceMatcher::OP_EQ, 2, 4, 1, 3],
+                        [SequenceMatcher::OP_INS, 4, 4, 3, 4],
                     ],
                 ],
             ],
@@ -99,20 +94,20 @@ EOT
                 ['I', 'Am', 'the', 'best'],
                 ['I', 'am', 'almost', 'the', 'best', 'one'],
                 [
-                    ['eq', 0, 1, 0, 1],
-                    ['rep', 1, 2, 1, 3],
-                    ['eq', 2, 4, 3, 5],
-                    ['ins', 4, 4, 5, 6],
+                    [SequenceMatcher::OP_EQ, 0, 1, 0, 1],
+                    [SequenceMatcher::OP_REP, 1, 2, 1, 3],
+                    [SequenceMatcher::OP_EQ, 2, 4, 3, 5],
+                    [SequenceMatcher::OP_INS, 4, 4, 5, 6],
                 ],
             ],
             [
                 ['Who', 'has', 'been', 'read', 'the', 'book'],
                 ['Who', 'read', 'the', 'book', 'today'],
                 [
-                    ['eq', 0, 1, 0, 1],
-                    ['del', 1, 3, 1, 1],
-                    ['eq', 3, 6, 1, 4],
-                    ['ins', 6, 6, 4, 5],
+                    [SequenceMatcher::OP_EQ, 0, 1, 0, 1],
+                    [SequenceMatcher::OP_DEL, 1, 3, 1, 1],
+                    [SequenceMatcher::OP_EQ, 3, 6, 1, 4],
+                    [SequenceMatcher::OP_INS, 6, 6, 4, 5],
                 ],
             ],
         ];

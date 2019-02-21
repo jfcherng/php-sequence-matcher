@@ -13,17 +13,17 @@ namespace Jfcherng\Diff;
  */
 final class SequenceMatcher
 {
-    // people may prefer this for debugging
-    const OP_EQ = 'eq';
-    const OP_DEL = 'del';
-    const OP_INS = 'ins';
-    const OP_REP = 'rep';
+    const OP_EQ = 1 << 0;
+    const OP_DEL = 1 << 1;
+    const OP_INS = 1 << 2;
+    const OP_REP = 1 << 3;
 
-    // people may prefer this for bit operations
-    const OP_INT_EQ = 1 << 0;
-    const OP_INT_DEL = 1 << 1;
-    const OP_INT_INS = 1 << 2;
-    const OP_INT_REP = 1 << 3;
+    const OP_INT_TO_STR_MAP = [
+        self::OP_EQ => 'eq',
+        self::OP_DEL => 'del',
+        self::OP_INS => 'ins',
+        self::OP_REP => 'rep',
+    ];
 
     /**
      * @var null|callable either a string or an array containing a callback function to determine if a line is "junk" or not
@@ -61,17 +61,6 @@ final class SequenceMatcher
     private static $defaultOptions = [
         'ignoreWhitespace' => false,
         'ignoreCase' => false,
-        'useIntOpcodes' => false,
-    ];
-
-    /**
-     * @var array opcode constants
-     */
-    private $ops = [
-        // 'eq' => ?,
-        // 'del' => ?,
-        // 'ins' => ?,
-        // 'rep' => ?,
     ];
 
     /**
@@ -117,7 +106,6 @@ final class SequenceMatcher
     {
         $this->options = $options + self::$defaultOptions;
 
-        $this->setOps($this->options['useIntOpcodes']);
         $this->resetCachedResults();
 
         return $this;
@@ -188,16 +176,6 @@ final class SequenceMatcher
         }
 
         return $this;
-    }
-
-    /**
-     * Get the ops.
-     *
-     * @return array the ops
-     */
-    public function getOps(): array
-    {
-        return $this->ops;
     }
 
     /**
@@ -418,16 +396,16 @@ final class SequenceMatcher
 
         foreach ($this->getMatchingBlocks() as [$ai, $bj, $size]) {
             if ($i < $ai && $j < $bj) {
-                $tag = $this->ops['rep'];
+                $tag = self::OP_REP;
             } elseif ($i < $ai) {
-                $tag = $this->ops['del'];
+                $tag = self::OP_DEL;
             } elseif ($j < $bj) {
-                $tag = $this->ops['ins'];
+                $tag = self::OP_INS;
             } else {
-                $tag = null;
+                $tag = 0;
             }
 
-            if (isset($tag)) {
+            if ($tag) {
                 $this->opcodes[] = [$tag, $i, $ai, $j, $bj];
             }
 
@@ -435,7 +413,7 @@ final class SequenceMatcher
             $j = $bj + $size;
 
             if ($size) {
-                $this->opcodes[] = [$this->ops['eq'], $ai, $i, $bj, $j];
+                $this->opcodes[] = [self::OP_EQ, $ai, $i, $bj, $j];
             }
         }
 
@@ -463,11 +441,11 @@ final class SequenceMatcher
 
         if (empty($opcodes)) {
             $opcodes = [
-                [$this->ops['eq'], 0, 1, 0, 1],
+                [self::OP_EQ, 0, 1, 0, 1],
             ];
         }
 
-        if ($opcodes[0][0] === $this->ops['eq']) {
+        if ($opcodes[0][0] === self::OP_EQ) {
             $opcodes[0] = [
                 $opcodes[0][0],
                 \max($opcodes[0][1], $opcodes[0][2] - $context),
@@ -478,7 +456,7 @@ final class SequenceMatcher
         }
 
         $lastItem = \count($opcodes) - 1;
-        if ($opcodes[$lastItem][0] === $this->ops['eq']) {
+        if ($opcodes[$lastItem][0] === self::OP_EQ) {
             [$tag, $i1, $i2, $j1, $j2] = $opcodes[$lastItem];
             $opcodes[$lastItem] = [
                 $tag,
@@ -492,7 +470,7 @@ final class SequenceMatcher
         $maxRange = $context << 1;
         $groups = $group = [];
         foreach ($opcodes as [$tag, $i1, $i2, $j1, $j2]) {
-            if ($tag === $this->ops['eq'] && $i2 - $i1 > $maxRange) {
+            if ($tag === self::OP_EQ && $i2 - $i1 > $maxRange) {
                 $group[] = [
                     $tag,
                     $i1,
@@ -511,7 +489,7 @@ final class SequenceMatcher
 
         if (
             !empty($group) &&
-            (\count($group) !== 1 || $group[0][0] !== $this->ops['eq'])
+            (\count($group) !== 1 || $group[0][0] !== self::OP_EQ)
         ) {
             $groups[] = $group;
         }
@@ -520,33 +498,21 @@ final class SequenceMatcher
     }
 
     /**
-     * Set the ops.
+     * Convert an operation code into string for human reading.
      *
-     * @param bool $useIntOpcodes to use int opcodes or not
+     * @param int $op the operation code
      *
-     * @return self
+     * @throws \InvalidArgumentException
+     *
+     * @return string the string representation of the operation code
      */
-    private function setOps(bool $useIntOpcodes): self
+    public static function opIntToStr(int $op): string
     {
-        if ($useIntOpcodes) {
-            $this->ops = [
-                'del' => self::OP_INT_DEL,
-                'eq' => self::OP_INT_EQ,
-                'ins' => self::OP_INT_INS,
-                'rep' => self::OP_INT_REP,
-            ];
-        } else {
-            $this->ops = [
-                'del' => self::OP_DEL,
-                'eq' => self::OP_EQ,
-                'ins' => self::OP_INS,
-                'rep' => self::OP_REP,
-            ];
+        if (!isset(self::OP_INT_TO_STR_MAP[$op])) {
+            throw new \InvalidArgumentException("Invalid OP: {$op}");
         }
 
-        $this->resetCachedResults();
-
-        return $this;
+        return self::OP_INT_TO_STR_MAP[$op];
     }
 
     /**
