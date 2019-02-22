@@ -13,12 +13,14 @@ namespace Jfcherng\Diff;
  */
 final class SequenceMatcher
 {
-    const OP_EQ = 1 << 0;
-    const OP_DEL = 1 << 1;
-    const OP_INS = 1 << 2;
-    const OP_REP = 1 << 3;
+    const OP_NOP = 0; // no operation
+    const OP_EQ = 1 << 0; // equal
+    const OP_DEL = 1 << 1; // delete
+    const OP_INS = 1 << 2; // insert
+    const OP_REP = 1 << 3; // replace
 
     const OP_INT_TO_STR_MAP = [
+        self::OP_NOP => 'nop',
         self::OP_EQ => 'eq',
         self::OP_DEL => 'del',
         self::OP_INS => 'ins',
