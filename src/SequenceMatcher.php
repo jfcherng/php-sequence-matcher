@@ -404,7 +404,7 @@ final class SequenceMatcher
             } elseif ($j < $bj) {
                 $tag = self::OP_INS;
             } else {
-                $tag = 0;
+                $tag = self::OP_NOP;
             }
 
             if ($tag) {
