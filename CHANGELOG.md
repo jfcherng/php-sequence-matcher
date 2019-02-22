@@ -1,6 +1,10 @@
 
 ## VERSION 3  LIGHTNING
 
+ * Version **3.1** - OP_NOP
+   * 2019-02-22 21:28  **3.1.0**  initial release
+      * e6546c7 Add SequenceMatcher::OP_NOP
+
  * Version **3.0** - LIGHTNING
    * 2019-02-22 01:27  **3.0.0**  initial release
       * fc7d2eb Always use int OP
