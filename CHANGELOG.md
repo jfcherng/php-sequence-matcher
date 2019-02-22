@@ -2,6 +2,8 @@
 ## VERSION 3  LIGHTNING
 
  * Version **3.1** - OP_NOP
+   * 2019-02-22 22:44  **3.1.1**  nits
+      * dc42d28 nits
    * 2019-02-22 21:28  **3.1.0**  initial release
       * e6546c7 Add SequenceMatcher::OP_NOP
 
