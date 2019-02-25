@@ -68,11 +68,6 @@ final class SequenceMatcher
     /**
      * @var array
      */
-    private $fullBCount = [];
-
-    /**
-     * @var array
-     */
     private $matchingBlocks = [];
 
     /**
@@ -173,7 +168,6 @@ final class SequenceMatcher
             $this->b = $b;
             $this->resetCachedResults();
 
-            $this->fullBCount = [];
             $this->chainB();
         }
 
