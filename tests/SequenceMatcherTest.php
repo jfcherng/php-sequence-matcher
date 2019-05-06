@@ -9,8 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @coversNothing
+ *
+ * @internal
  */
-class SequenceMatcherTest extends TestCase
+final class SequenceMatcherTest extends TestCase
 {
     /**
      * The SequenceMatcher object.
@@ -79,7 +81,7 @@ EOT
             \explode("\n", $new)
         );
 
-        $this->assertSame($expected, $this->sm->getGroupedOpcodes());
+        static::assertSame($expected, $this->sm->getGroupedOpcodes());
     }
 
     /**
@@ -127,6 +129,6 @@ EOT
     {
         $this->sm->setSequences($old, $new);
 
-        $this->assertSame($expected, $this->sm->getOpcodes());
+        static::assertSame($expected, $this->sm->getOpcodes());
     }
 }
