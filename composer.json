@@ -3,6 +3,8 @@
     "description": "A longest sequence matcher.",
     "type": "library",
     "license": "BSD-3-Clause",
+    "minimum-stability": "beta",
+    "prefer-stable": true,
     "authors": [
         {
             "name": "Jack Cherng",
@@ -28,7 +30,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.15",
-        "phan/phan": "^1.2",
+        "phan/phan": "^2.0",
         "phpunit/phpunit": "^7.2 || ^8.0"
     },
     "config": {
