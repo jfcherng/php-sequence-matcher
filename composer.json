@@ -1,6 +1,6 @@
 {
     "name": "jfcherng/php-sequence-matcher",
-    "description": "A longest sequence matcher.",
+    "description": "A longest sequence matcher. The logic is primarily based on the Python difflib package.",
     "type": "library",
     "license": "BSD-3-Clause",
     "minimum-stability": "beta",
