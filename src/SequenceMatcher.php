@@ -483,7 +483,10 @@ final class SequenceMatcher
 
         if (
             !empty($group) &&
-            (\count($group) !== 1 || $group[0][0] !== self::OP_EQ)
+            (
+                \count($group) !== 1 ||
+                $group[0][0] !== self::OP_EQ
+            )
         ) {
             $groups[] = $group;
         }
