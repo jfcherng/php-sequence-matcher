@@ -96,8 +96,6 @@ final class SequenceMatcher
      * Set the options.
      *
      * @param array $options The options
-     *
-     * @return self
      */
     public function setOptions(array $options): self
     {
@@ -110,8 +108,6 @@ final class SequenceMatcher
 
     /**
      * Reset cached results.
-     *
-     * @return self
      */
     public function resetCachedResults(): self
     {
@@ -126,8 +122,6 @@ final class SequenceMatcher
      *
      * @param string[] $a an array containing the lines to compare against
      * @param string[] $b an array containing the lines to compare
-     *
-     * @return self
      */
     public function setSequences(array $a, array $b): self
     {
@@ -139,8 +133,6 @@ final class SequenceMatcher
      * when calling the calculation methods, we need to recalculate them.
      *
      * @param string[] $a the sequence to set as the first sequence
-     *
-     * @return self
      */
     public function setSeq1(array $a): self
     {
@@ -157,8 +149,6 @@ final class SequenceMatcher
      * when calling the calculation methods, we need to recalculate them.
      *
      * @param string[] $b the sequence to set as the second sequence
-     *
-     * @return self
      */
     public function setSeq2(array $b): self
     {
@@ -543,8 +533,6 @@ final class SequenceMatcher
     /**
      * Generate the internal arrays containing the list of junk and non-junk
      * characters for the second ($b) sequence.
-     *
-     * @return self
      */
     private function chainB(): self
     {
@@ -598,8 +586,6 @@ final class SequenceMatcher
     /**
      * Checks if a particular character is in the junk dictionary
      * for the list of junk characters.
-     *
-     * @param string $b
      *
      * @return bool $b True if the character is considered junk. False if not.
      */
