@@ -1,6 +1,27 @@
 
 ## VERSION 3  LIGHTNING
 
+ * Version **3.2** - Add SequenceMatcher::opStrToInt()
+   * 2020-01-05 15:34  **3.2.0**  initial release
+      * b95a045 Add SequenceMatcher::opStrToInt()
+      * bed369c Update deps
+      * 33397a8 Update .travis.yml to PHP 7.4 stable
+      * 06e9538 $ composer fix
+      * 9197cb7 Update deps
+      * 7d28307 Fix PSR-12
+      * 11e0c04 Add php_codesniffer
+      * 9276a3b Update readme to use badges from shields.io
+      * bc18f64 Update composer description
+      * 4091fb7 Update deps
+      * 8e93ecd Add .gitattributes
+      * e484eb0 $ composer fix
+      * bbd8cd9 Update deps
+      * 177f442 Update .travis.yml for 7.4snapshot
+      * 1face1c Add .editorconfig
+      * a56e19e Update deps
+      * c4de6d3 nits
+      * 53f82af Remove useless codes
+
  * Version **3.1** - OP_NOP
    * 2019-02-22 22:44  **3.1.1**  nits
       * dc42d28 nits
