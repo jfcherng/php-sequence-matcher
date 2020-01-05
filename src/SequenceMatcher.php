@@ -27,6 +27,14 @@ final class SequenceMatcher
         self::OP_REP => 'rep',
     ];
 
+    const OP_STR_TO_INT_MAP = [
+        'nop' => self::OP_NOP,
+        'eq' => self::OP_EQ,
+        'del' => self::OP_DEL,
+        'ins' => self::OP_INS,
+        'rep' => self::OP_REP,
+    ];
+
     /**
      * @var null|callable either a string or an array containing a callback function to determine if a line is "junk" or not
      */
@@ -485,7 +493,7 @@ final class SequenceMatcher
     }
 
     /**
-     * Convert an operation code into string for human reading.
+     * Convert an operation code from int into its string form.
      *
      * @param int $op the operation code
      *
@@ -500,6 +508,24 @@ final class SequenceMatcher
         }
 
         return self::OP_INT_TO_STR_MAP[$op];
+    }
+
+    /**
+     * Convert an operation code from string into its int form.
+     *
+     * @param string $op the operation code
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return int the int representation of the operation code
+     */
+    public static function opStrToInt(string $op): int
+    {
+        if (!isset(self::OP_STR_TO_INT_MAP[$op])) {
+            throw new \InvalidArgumentException("Invalid OP: {$op}");
+        }
+
+        return self::OP_STR_TO_INT_MAP[$op];
     }
 
     /**
