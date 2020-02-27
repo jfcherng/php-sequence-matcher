@@ -2,6 +2,9 @@
 ## VERSION 3  LIGHTNING
 
  * Version **3.2** - Add SequenceMatcher::opStrToInt()
+   * 2020-02-27 16:08  **3.2.1**  Improve const phpdoc
+      * 874b98c Improve const phpdoc
+      * 1bf57a4 Update deps
    * 2020-01-05 15:34  **3.2.0**  initial release
       * b95a045 Add SequenceMatcher::opStrToInt()
       * bed369c Update deps
