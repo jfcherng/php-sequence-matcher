@@ -2,6 +2,10 @@
 ## VERSION 3  LIGHTNING
 
  * Version **3.2** - Add SequenceMatcher::opStrToInt()
+   * 2020-03-06 21:39  **3.2.2**  Fix getGroupedOpcodes(0) behavior
+      * 2a97977 Fix getGroupedOpcodes(0) should not have leading/trailing OP_EQ blocks
+      * 6d35ebc Improve phpdocs
+      * 1fc4d29 Update deps
    * 2020-02-27 16:08  **3.2.1**  Improve const phpdoc
       * 874b98c Improve const phpdoc
       * 1bf57a4 Update deps
