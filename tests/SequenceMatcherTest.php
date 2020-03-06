@@ -39,6 +39,23 @@ final class SequenceMatcherTest extends TestCase
         return [
             [
                 <<<'EOT'
+A
+B
+C
+D
+EOT
+                ,
+                <<<'EOT'
+A
+B
+C
+D
+EOT
+                ,
+                [],
+            ],
+            [
+                <<<'EOT'
 apples
 oranges
 kiwis
@@ -82,6 +99,75 @@ EOT
         );
 
         static::assertSame($expected, $this->sm->getGroupedOpcodes());
+    }
+
+    /**
+     * Data provider for SequenceMatcher::getGroupedOpcodes.
+     *
+     * @return array the data provider
+     */
+    public function getGroupedOpcodesWithZeroContextDataProvider(): array
+    {
+        return [
+            [
+                <<<'EOT'
+A
+B
+C
+D
+EOT
+                ,
+                <<<'EOT'
+A
+B
+C
+D
+EOT
+                ,
+                [],
+            ],
+            [
+                <<<'EOT'
+A
+B
+C
+D
+EOT
+                ,
+                <<<'EOT'
+A
+B
+X
+D
+EOT
+                ,
+                [
+                    [
+                        [SequenceMatcher::OP_REP, 2, 3, 2, 3],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test the SequenceMatcher::getGroupedOpcodes.
+     *
+     * @covers       \Jfcherng\Diff\SequenceMatcher::getGroupedOpcodes
+     * @dataProvider getGroupedOpcodesWithZeroContextDataProvider
+     *
+     * @param string $old      the old
+     * @param string $new      the new
+     * @param array  $expected the expected
+     */
+    public function testGetGroupedOpcodesWithZeroContext(string $old, string $new, array $expected): void
+    {
+        $this->sm->setSequences(
+            \explode("\n", $old),
+            \explode("\n", $new)
+        );
+
+        static::assertSame($expected, $this->sm->getGroupedOpcodes(0));
     }
 
     /**

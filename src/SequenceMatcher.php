@@ -447,6 +447,7 @@ final class SequenceMatcher
         }
 
         if ($opcodes[0][0] === self::OP_EQ) {
+            // fix the leading sequence which is out of context.
             $opcodes[0] = [
                 $opcodes[0][0],
                 \max($opcodes[0][1], $opcodes[0][2] - $context),
@@ -459,6 +460,7 @@ final class SequenceMatcher
         $lastItem = \count($opcodes) - 1;
         if ($opcodes[$lastItem][0] === self::OP_EQ) {
             [$tag, $i1, $i2, $j1, $j2] = $opcodes[$lastItem];
+            // fix the trailing sequence which is out of context.
             $opcodes[$lastItem] = [
                 $tag,
                 $i1,
@@ -496,6 +498,28 @@ final class SequenceMatcher
             )
         ) {
             $groups[] = $group;
+        }
+
+        // there will be at least leading/trailing OP_EQ blocks
+        // if we want really zero-context, we keep only non-equal blocks
+        if ($context <= 0) {
+            $groupsNew = [];
+
+            foreach ($groups as $group) {
+                $groupNew = [];
+
+                foreach ($group as $block) {
+                    if ($block[0] !== self::OP_EQ) {
+                        $groupNew[] = $block;
+                    }
+                }
+
+                if (!empty($groupNew)) {
+                    $groupsNew[] = $groupNew;
+                }
+            }
+
+            return $groupsNew;
         }
 
         return $groups;
