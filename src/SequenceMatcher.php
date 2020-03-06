@@ -197,7 +197,7 @@ final class SequenceMatcher
      * @param int $blo the lower constraint for the second sequence
      * @param int $bhi the upper constraint for the second sequence
      *
-     * @return array an array containing the longest match that includes the starting position in $a, start in $b and the length/size
+     * @return int[] an array containing the longest match that includes the starting position in $a, start in $b and the length/size
      */
     public function findLongestMatch(int $alo, int $ahi, int $blo, int $bhi): array
     {
@@ -287,7 +287,7 @@ final class SequenceMatcher
      * constraint of the block in $b and finally the number of lines that the
      * block continues for.
      *
-     * @return array a nested array of the matching blocks, as described by the function
+     * @return int[][] a nested array of the matching blocks, as described by the function
      */
     public function getMatchingBlocks(): array
     {
@@ -384,7 +384,7 @@ final class SequenceMatcher
      *           $i1 in $a.
      * equal  -  The two strings with the specified ranges are equal.
      *
-     * @return array array of the opcodes describing the differences between the strings
+     * @return int[][] array of the opcodes describing the differences between the strings
      */
     public function getOpcodes(): array
     {
@@ -434,7 +434,7 @@ final class SequenceMatcher
      *
      * @param int $context the number of lines of context to provide around the groups
      *
-     * @return array nested array of all of the grouped opcodes
+     * @return int[][][] nested array of all of the grouped opcodes
      */
     public function getGroupedOpcodes(int $context = 3): array
     {
