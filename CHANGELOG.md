@@ -2,6 +2,10 @@
 ## VERSION 3  LIGHTNING
 
  * Version **3.2** - Add SequenceMatcher::opStrToInt()
+   * 2020-05-28 03:25  **3.2.3**  allow PHP 8
+      * 43cfe97 chore: update deps
+      * 20a4dff chore: Composer PHP constrain >=7.1.3
+      * b707afc docs: use markdown grammar badges in readme
    * 2020-03-06 21:39  **3.2.2**  Fix getGroupedOpcodes(0) behavior
       * 2a97977 Fix getGroupedOpcodes(0) should not have leading/trailing OP_EQ blocks
       * 6d35ebc Improve phpdocs
