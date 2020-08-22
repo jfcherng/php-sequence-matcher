@@ -240,7 +240,7 @@ final class SequenceMatcher
             $bestI > $alo &&
             $bestJ > $blo &&
             !$this->isBJunk($b[$bestJ - 1]) &&
-            !$this->linesAreDifferent($bestI - 1, $bestJ - 1)
+            !$this->areDifferentLines($bestI - 1, $bestJ - 1)
         ) {
             --$bestI;
             --$bestJ;
@@ -249,9 +249,9 @@ final class SequenceMatcher
 
         while (
             $bestI + $bestSize < $ahi &&
-            ($bestJ + $bestSize) < $bhi &&
+            $bestJ + $bestSize < $bhi &&
             !$this->isBJunk($b[$bestJ + $bestSize]) &&
-            !$this->linesAreDifferent($bestI + $bestSize, $bestJ + $bestSize)
+            !$this->areDifferentLines($bestI + $bestSize, $bestJ + $bestSize)
         ) {
             ++$bestSize;
         }
@@ -260,7 +260,7 @@ final class SequenceMatcher
             $bestI > $alo &&
             $bestJ > $blo &&
             $this->isBJunk($b[$bestJ - 1]) &&
-            !$this->linesAreDifferent($bestI - 1, $bestJ - 1)
+            !$this->areDifferentLines($bestI - 1, $bestJ - 1)
         ) {
             --$bestI;
             --$bestJ;
@@ -271,7 +271,7 @@ final class SequenceMatcher
             $bestI + $bestSize < $ahi &&
             $bestJ + $bestSize < $bhi &&
             $this->isBJunk($b[$bestJ + $bestSize]) &&
-            !$this->linesAreDifferent($bestI + $bestSize, $bestJ + $bestSize)
+            !$this->areDifferentLines($bestI + $bestSize, $bestJ + $bestSize)
         ) {
             ++$bestSize;
         }
@@ -305,8 +305,7 @@ final class SequenceMatcher
         $matchingBlocks = [];
         while (!empty($queue)) {
             [$alo, $ahi, $blo, $bhi] = \array_pop($queue);
-            $x = $this->findLongestMatch($alo, $ahi, $blo, $bhi);
-            [$i, $j, $k] = $x;
+            [$i, $j, $k] = $x = $this->findLongestMatch($alo, $ahi, $blo, $bhi);
 
             if ($k) {
                 $matchingBlocks[] = $x;
@@ -569,7 +568,7 @@ final class SequenceMatcher
      *
      * @return bool true if the lines are different and false if not
      */
-    private function linesAreDifferent(int $aIndex, int $bIndex): bool
+    private function areDifferentLines(int $aIndex, int $bIndex): bool
     {
         $lineA = $this->a[$aIndex];
         $lineB = $this->b[$bIndex];
