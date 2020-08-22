@@ -217,4 +217,45 @@ EOT
 
         static::assertSame($expected, $this->sm->getOpcodes());
     }
+
+    /**
+     * Test the SequenceMatcher::getOpcodes with the "ignoreWhitespaces" option.
+     * @group fail
+     */
+    public function testIgnoreWhitespaces1(): void
+    {
+        $old = <<<'PHP'
+<?php
+
+function foo(\DateTimeImmutable $date)
+{
+    if ($date) {
+        echo 'foo';
+    } else {
+        echo 'bar';
+    }
+}
+
+PHP;
+        $new = <<<'PHP'
+<?php
+
+function foo(\DateTimeImmutable $date)
+{
+    echo 'foo';
+}
+
+PHP;
+
+        $this->sm->setSequences(\explode("\n", $old), \explode("\n", $new));
+        $this->sm->setOptions(['ignoreWhitespace' => true]);
+
+        static::assertSame([
+            [SequenceMatcher::OP_EQ, 0, 4, 0, 4],
+            [SequenceMatcher::OP_DEL, 4, 5, 4, 4],
+            [SequenceMatcher::OP_EQ, 5, 6, 4, 5],
+            [SequenceMatcher::OP_DEL, 6, 9, 5, 5],
+            [SequenceMatcher::OP_EQ, 9, 11, 5, 7],
+        ], $this->sm->getOpcodes());
+    }
 }

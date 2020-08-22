@@ -60,6 +60,16 @@ final class SequenceMatcher
     private $b = [];
 
     /**
+     * @var array the first sequence to compare against (transformed)
+     */
+    private $at = [];
+
+    /**
+     * @var array the second sequence (transformed)
+     */
+    private $bt = [];
+
+    /**
      * @var array array of characters that are considered junk from the second sequence. Characters are the array key.
      */
     private $junkDict = [];
@@ -116,7 +126,13 @@ final class SequenceMatcher
      */
     public function setOptions(array $options): self
     {
+        $needRerunChainB = $this->isAnyOptionChanged($this->options, $options, ['ignoreCase', 'ignoreWhitespace']);
+
         $this->options = $options + self::$defaultOptions;
+
+        if ($needRerunChainB) {
+            $this->chainB();
+        }
 
         $this->resetCachedResults();
 
@@ -209,9 +225,6 @@ final class SequenceMatcher
      */
     public function findLongestMatch(int $alo, int $ahi, int $blo, int $bhi): array
     {
-        $a = $this->a;
-        $b = $this->b;
-
         $bestI = $alo;
         $bestJ = $blo;
         $bestSize = 0;
@@ -220,7 +233,7 @@ final class SequenceMatcher
 
         for ($i = $alo; $i < $ahi; ++$i) {
             $newJ2Len = [];
-            $jDict = $this->b2j[$a[$i]] ?? [];
+            $jDict = $this->b2j[$this->at[$i]] ?? [];
 
             foreach ($jDict as $j) {
                 if ($j < $blo) {
@@ -247,8 +260,8 @@ final class SequenceMatcher
         while (
             $bestI > $alo &&
             $bestJ > $blo &&
-            !$this->isBJunk($b[$bestJ - 1]) &&
-            !$this->areDifferentLines($bestI - 1, $bestJ - 1)
+            $this->at[$bestI - 1] === $this->bt[$bestJ - 1] &&
+            !$this->isBJunk($this->bt[$bestJ - 1])
         ) {
             --$bestI;
             --$bestJ;
@@ -258,8 +271,8 @@ final class SequenceMatcher
         while (
             $bestI + $bestSize < $ahi &&
             $bestJ + $bestSize < $bhi &&
-            !$this->isBJunk($b[$bestJ + $bestSize]) &&
-            !$this->areDifferentLines($bestI + $bestSize, $bestJ + $bestSize)
+            $this->at[$bestI + $bestSize] === $this->bt[$bestJ + $bestSize] &&
+            !$this->isBJunk($this->bt[$bestJ + $bestSize])
         ) {
             ++$bestSize;
         }
@@ -267,8 +280,8 @@ final class SequenceMatcher
         while (
             $bestI > $alo &&
             $bestJ > $blo &&
-            $this->isBJunk($b[$bestJ - 1]) &&
-            !$this->areDifferentLines($bestI - 1, $bestJ - 1)
+            $this->at[$bestI - 1] === $this->bt[$bestJ - 1] &&
+            $this->isBJunk($this->bt[$bestJ - 1])
         ) {
             --$bestI;
             --$bestJ;
@@ -278,8 +291,8 @@ final class SequenceMatcher
         while (
             $bestI + $bestSize < $ahi &&
             $bestJ + $bestSize < $bhi &&
-            $this->isBJunk($b[$bestJ + $bestSize]) &&
-            !$this->areDifferentLines($bestI + $bestSize, $bestJ + $bestSize)
+            $this->at[$bestI + $bestSize] === $this->bt[$bestJ + $bestSize] &&
+            $this->isBJunk($this->bt[$bestJ + $bestSize])
         ) {
             ++$bestSize;
         }
@@ -569,31 +582,43 @@ final class SequenceMatcher
     }
 
     /**
-     * Check if the two lines at the given indexes are different or not.
+     * Determine if any option under test changed.
      *
-     * @param int $aIndex line number to check against in a
-     * @param int $bIndex line number to check against in b
-     *
-     * @return bool true if the lines are different and false if not
+     * @param array $old  the old options
+     * @param array $new  the new options
+     * @param array $keys the option keys under test
      */
-    private function areDifferentLines(int $aIndex, int $bIndex): bool
+    private function isAnyOptionChanged(array $old, array $new, array $keys): bool
     {
-        $lineA = $this->a[$aIndex];
-        $lineB = $this->b[$bIndex];
+        foreach ($keys as $key) {
+            if (isset($new[$key]) && $new[$key] !== $old[$key]) {
+                return true;
+            }
+        }
 
+        return false;
+    }
+
+    /**
+     * Get the processed line with the initialized options.
+     *
+     * @param string $line the line
+     *
+     * @return string the line after being processed
+     */
+    private function processLineWithOptions(string $line): string
+    {
         if ($this->options['ignoreWhitespace']) {
-            static $whitespaces = ["\t", ' '];
+            static $whitespaces = [' ', "\t", "\r", "\n"];
 
-            $lineA = \str_replace($whitespaces, '', $lineA);
-            $lineB = \str_replace($whitespaces, '', $lineB);
+            $line = \str_replace($whitespaces, '', $line);
         }
 
         if ($this->options['ignoreCase']) {
-            $lineA = \strtolower($lineA);
-            $lineB = \strtolower($lineB);
+            $line = \strtolower($line);
         }
 
-        return $lineA !== $lineB;
+        return $line;
     }
 
     /**
@@ -602,12 +627,15 @@ final class SequenceMatcher
      */
     private function chainB(): self
     {
-        $length = \count($this->b);
+        $this->at = \array_map([$this, 'processLineWithOptions'], $this->a);
+        $this->bt = \array_map([$this, 'processLineWithOptions'], $this->b);
+
+        $length = \count($this->bt);
         $this->b2j = [];
         $popularDict = [];
 
         for ($i = 0; $i < $length; ++$i) {
-            $char = $this->b[$i];
+            $char = $this->bt[$i];
 
             if (isset($this->b2j[$char])) {
                 if ($length >= 200 && \count($this->b2j[$char]) * 100 > $length) {
