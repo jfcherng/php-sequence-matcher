@@ -2,6 +2,12 @@
 ## VERSION 3  LIGHTNING
 
  * Version **3.2** - Add SequenceMatcher::opStrToInt()
+   * 2020-08-22 13:34  **3.2.4**  fix: "ignoreWhitespace"
+      * 46deb24 fix: "ignoreWhitespace" is not working as intended
+      * 9a7fd38 feat: add getOptions() method
+      * 8200cb3 refactor: tiny tidy codes
+      * 8d8fea9 chore(ci): migrate CI from Travis to GitHub Actions
+      * 37ff494 chore: update license year
    * 2020-05-28 03:25  **3.2.3**  allow PHP 8
       * 43cfe97 chore: update deps
       * 20a4dff chore: Composer PHP constrain >=7.1.3
