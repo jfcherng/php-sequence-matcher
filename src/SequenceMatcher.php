@@ -124,6 +124,14 @@ final class SequenceMatcher
     }
 
     /**
+     * Get the options.
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
      * Reset cached results.
      */
     public function resetCachedResults(): self
