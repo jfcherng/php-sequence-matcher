@@ -2,6 +2,10 @@
 ## VERSION 3  LIGHTNING
 
  * Version **3.2** - Add SequenceMatcher::opStrToInt()
+   * 2020-08-23 18:26  **3.2.5**  fix a regression about the last output block
+      * c2a5b06 fix: regression about the last output block
+      * 371d4e2 chore: do not fix styles for files in tests/data/
+      * b5c3860 chore: update deps
    * 2020-08-22 13:34  **3.2.4**  fix: "ignoreWhitespace"
       * 46deb24 fix: "ignoreWhitespace" is not working as intended
       * 9a7fd38 feat: add getOptions() method
