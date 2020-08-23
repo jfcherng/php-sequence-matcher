@@ -219,12 +219,15 @@ EOT
     }
 
     /**
-     * Test the SequenceMatcher::getOpcodes with the "ignoreWhitespaces" option.
-     * @group fail
+     * Data provider for SequenceMatcher::getGroupedOpcodes with "ignoreWhitespaces".
+     *
+     * @return array the data provider
      */
-    public function testIgnoreWhitespaces1(): void
+    public function getGroupedOpcodesIgnoreWhitespacesDataProvider(): array
     {
-        $old = <<<'PHP'
+        return [
+            [
+                <<<'OLD'
 <?php
 
 function foo(\DateTimeImmutable $date)
@@ -236,8 +239,9 @@ function foo(\DateTimeImmutable $date)
     }
 }
 
-PHP;
-        $new = <<<'PHP'
+OLD
+                ,
+                <<<'NEW'
 <?php
 
 function foo(\DateTimeImmutable $date)
@@ -245,17 +249,86 @@ function foo(\DateTimeImmutable $date)
     echo 'foo';
 }
 
-PHP;
+NEW
+                ,
+                [
+                    [
+                        [SequenceMatcher::OP_DEL, 4, 5, 4, 4],
+                    ],
+                    [
+                        [SequenceMatcher::OP_DEL, 6, 9, 5, 5],
+                    ],
+                ],
+            ],
+            [
+                <<<'OLD'
+<?php
 
+class Foo
+{
+    function foo()
+    {
+        echo 'haha';
+        return;
+
+        echo 'blabla';
+        if (false) {
+
+        }
+    }
+
+}
+
+OLD
+                ,
+                <<<'NEW'
+<?php
+
+class Foo
+{
+    function foo()
+    {
+        echo 'haha';
+        return;
+    }
+
+}
+
+NEW
+                ,
+                [
+                    [
+                        [SequenceMatcher::OP_DEL, 8, 13, 8, 8],
+                    ],
+                ],
+            ],
+            [
+                \file_get_contents(__DIR__ . '/data/WorkerCommandA.php'),
+                \file_get_contents(__DIR__ . '/data/WorkerCommandB.php'),
+                [
+                    [
+                        [SequenceMatcher::OP_DEL, 217, 222, 217, 217],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test the SequenceMatcher::getOpcodes with "ignoreWhitespaces".
+     *
+     * @covers       \Jfcherng\Diff\SequenceMatcher::getOpcodes
+     * @dataProvider getGroupedOpcodesIgnoreWhitespacesDataProvider
+     *
+     * @param string $old      the old
+     * @param string $new      the new
+     * @param array  $expected the expected
+     */
+    public function testGetOpcodesIgnoreWhitespaces(string $old, string $new, array $expected): void
+    {
         $this->sm->setSequences(\explode("\n", $old), \explode("\n", $new));
         $this->sm->setOptions(['ignoreWhitespace' => true]);
 
-        static::assertSame([
-            [SequenceMatcher::OP_EQ, 0, 4, 0, 4],
-            [SequenceMatcher::OP_DEL, 4, 5, 4, 4],
-            [SequenceMatcher::OP_EQ, 5, 6, 4, 5],
-            [SequenceMatcher::OP_DEL, 6, 9, 5, 5],
-            [SequenceMatcher::OP_EQ, 9, 11, 5, 7],
-        ], $this->sm->getOpcodes());
+        static::assertSame($expected, $this->sm->getGroupedOpcodes(0));
     }
 }

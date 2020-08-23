@@ -45,6 +45,14 @@ final class SequenceMatcher
     ];
 
     /**
+     * The helper line which may be used to append to the source inputs to help
+     * it easier to handle EOL at EOF problem. This line shouldn't be counted into diff.
+     *
+     * @var string
+     */
+    const APPENDED_HELPER_LINE = "\u{fcf28}\u{fc232}";
+
+    /**
      * @var null|callable either a string or an array containing a callback function to determine if a line is "junk" or not
      */
     private $junkCallback;
@@ -636,20 +644,19 @@ final class SequenceMatcher
 
         for ($i = 0; $i < $length; ++$i) {
             $char = $this->bt[$i];
+            $this->b2j[$char] = $this->b2j[$char] ?? [];
 
-            if (isset($this->b2j[$char])) {
-                if ($length >= 200 && \count($this->b2j[$char]) * 100 > $length) {
-                    $popularDict[$char] = 1;
+            if (
+                $length >= 1000
+                && \count($this->b2j[$char]) * 100 > $length
+                && $char !== self::APPENDED_HELPER_LINE
+            ) {
+                $popularDict[$char] = 1;
 
-                    unset($this->b2j[$char]);
-                } else {
-                    $this->b2j[$char][] = $i;
-                }
-
-                continue;
+                unset($this->b2j[$char]);
+            } else {
+                $this->b2j[$char][] = $i;
             }
-
-            $this->b2j[$char] = [$i];
         }
 
         // remove leftovers
