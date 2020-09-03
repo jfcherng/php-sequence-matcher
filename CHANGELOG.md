@@ -2,6 +2,8 @@
 ## VERSION 3  LIGHTNING
 
  * Version **3.2** - Add SequenceMatcher::opStrToInt()
+   * 2020-09-03 21:48  **3.2.6**  fix: empty $old or $new emits "undefined index"
+      * cdbccef fix: empty $old or $new emits "undefined index"
    * 2020-08-23 18:26  **3.2.5**  fix a regression about the last output block
       * c2a5b06 fix: regression about the last output block
       * 371d4e2 chore: do not fix styles for files in tests/data/
