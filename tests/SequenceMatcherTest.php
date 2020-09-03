@@ -179,6 +179,20 @@ EOT
     {
         return [
             [
+                ['foo'],
+                [],
+                [
+                    [SequenceMatcher::OP_DEL, 0, 1, 0, 0],
+                ],
+            ],
+            [
+                ['foo'],
+                [''],
+                [
+                    [SequenceMatcher::OP_REP, 0, 1, 0, 1],
+                ],
+            ],
+            [
                 ['I', 'Am', 'the', 'best'],
                 ['I', 'am', 'almost', 'the', 'best', 'one'],
                 [

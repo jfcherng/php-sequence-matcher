@@ -240,8 +240,12 @@ final class SequenceMatcher
         $j2Len = [];
 
         for ($i = $alo; $i < $ahi; ++$i) {
+            if (null === ($element = $this->at[$i] ?? null)) {
+                continue;
+            }
+
             $newJ2Len = [];
-            $jDict = $this->b2j[$this->at[$i]] ?? [];
+            $jDict = $this->b2j[$element] ?? [];
 
             foreach ($jDict as $j) {
                 if ($j < $blo) {
