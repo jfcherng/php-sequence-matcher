@@ -270,10 +270,10 @@ final class SequenceMatcher
         }
 
         while (
-            $bestI > $alo &&
-            $bestJ > $blo &&
-            $this->at[$bestI - 1] === $this->bt[$bestJ - 1] &&
-            !$this->isBJunk($this->bt[$bestJ - 1])
+            $bestI > $alo
+            && $bestJ > $blo
+            && $this->at[$bestI - 1] === $this->bt[$bestJ - 1]
+            && !$this->isBJunk($this->bt[$bestJ - 1])
         ) {
             --$bestI;
             --$bestJ;
@@ -281,19 +281,19 @@ final class SequenceMatcher
         }
 
         while (
-            $bestI + $bestSize < $ahi &&
-            $bestJ + $bestSize < $bhi &&
-            $this->at[$bestI + $bestSize] === $this->bt[$bestJ + $bestSize] &&
-            !$this->isBJunk($this->bt[$bestJ + $bestSize])
+            $bestI + $bestSize < $ahi
+            && $bestJ + $bestSize < $bhi
+            && $this->at[$bestI + $bestSize] === $this->bt[$bestJ + $bestSize]
+            && !$this->isBJunk($this->bt[$bestJ + $bestSize])
         ) {
             ++$bestSize;
         }
 
         while (
-            $bestI > $alo &&
-            $bestJ > $blo &&
-            $this->at[$bestI - 1] === $this->bt[$bestJ - 1] &&
-            $this->isBJunk($this->bt[$bestJ - 1])
+            $bestI > $alo
+            && $bestJ > $blo
+            && $this->at[$bestI - 1] === $this->bt[$bestJ - 1]
+            && $this->isBJunk($this->bt[$bestJ - 1])
         ) {
             --$bestI;
             --$bestJ;
@@ -301,10 +301,10 @@ final class SequenceMatcher
         }
 
         while (
-            $bestI + $bestSize < $ahi &&
-            $bestJ + $bestSize < $bhi &&
-            $this->at[$bestI + $bestSize] === $this->bt[$bestJ + $bestSize] &&
-            $this->isBJunk($this->bt[$bestJ + $bestSize])
+            $bestI + $bestSize < $ahi
+            && $bestJ + $bestSize < $bhi
+            && $this->at[$bestI + $bestSize] === $this->bt[$bestJ + $bestSize]
+            && $this->isBJunk($this->bt[$bestJ + $bestSize])
         ) {
             ++$bestSize;
         }
@@ -523,10 +523,10 @@ final class SequenceMatcher
         }
 
         if (
-            !empty($group) &&
-            (
-                \count($group) !== 1 ||
-                $group[0][0] !== self::OP_EQ
+            !empty($group)
+            && (
+                \count($group) !== 1
+                || $group[0][0] !== self::OP_EQ
             )
         ) {
             $groups[] = $group;
