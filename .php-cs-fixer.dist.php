@@ -3,14 +3,14 @@
 $config = (new PhpCsFixer\Config())
     ->setIndent("    ")
     ->setLineEnding("\n")
-    ->setCacheFile(__DIR__ . '/.php_cs.cache')
+    ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache')
     ->setRiskyAllowed(true)
     ->setRules([
         '@PHP71Migration' => true,
         '@PHP73Migration' => false,
         '@PhpCsFixer' => true,
         '@PhpCsFixer:risky' => true,
-        '@PSR2' => true,
+        '@PSR12' => true,
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'align_multiline_comment' => true,
@@ -35,6 +35,7 @@ $config = (new PhpCsFixer\Config())
         'no_null_property_initialization' => true,
         'no_short_echo_tag' => true,
         'no_superfluous_elseif' => true,
+        'no_trailing_whitespace_in_string' => false, // test cases have trailing spaces
         'no_unneeded_control_parentheses' => true,
         'no_useless_else' => true,
         'no_useless_return' => true,
@@ -64,6 +65,7 @@ $config = (new PhpCsFixer\Config())
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()
+            ->notPath('/branch-\\w+/') // git worktree
             ->exclude('libs')
             ->exclude('tests/data')
             ->exclude('tests/Fixtures')
