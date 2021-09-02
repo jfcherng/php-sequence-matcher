@@ -1,8 +1,7 @@
+.editorconfig export-ignore
 .gitattributes export-ignore
 .github/ export-ignore
 .gitignore export-ignore
-
-.editorconfig export-ignore
 .phan/ export-ignore
 .php_cs export-ignore
 .rmt.yml export-ignore
@@ -13,4 +12,5 @@ FUNDING.yml export-ignore
 phpcs.xml export-ignore
 phpunit.xml export-ignore
 pyproject.toml export-ignore
+RMT export-ignore
 tests/ export-ignore
