@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "55ef40b1e3095bcbf05e0a69706e2baf",
+    "content-hash": "c6b0c5b442afd69ed776c95fd431c133",
     "packages": [],
     "packages-dev": [
         {
@@ -731,16 +731,16 @@
         },
         {
             "name": "phan/phan",
-            "version": "3.0.0-RC1",
+            "version": "2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phan/phan.git",
-                "reference": "9c42585fd4eb77e0a592ef7e9ae495f949d9fa5d"
+                "reference": "37024c7c84ca153f8f7311db24f08d82ca5a237f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phan/phan/zipball/9c42585fd4eb77e0a592ef7e9ae495f949d9fa5d",
-                "reference": "9c42585fd4eb77e0a592ef7e9ae495f949d9fa5d",
+                "url": "https://api.github.com/repos/phan/phan/zipball/37024c7c84ca153f8f7311db24f08d82ca5a237f",
+                "reference": "37024c7c84ca153f8f7311db24f08d82ca5a237f",
                 "shasum": ""
             },
             "require": {
@@ -803,9 +803,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phan/phan/issues",
-                "source": "https://github.com/phan/phan/tree/master"
+                "source": "https://github.com/phan/phan/tree/v2"
             },
-            "time": "2020-05-02T14:20:35+00:00"
+            "time": "2020-07-02T01:28:55+00:00"
         },
         {
             "name": "phar-io/manifest",
