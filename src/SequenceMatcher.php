@@ -187,6 +187,7 @@ final class SequenceMatcher
     {
         if ($this->a !== $a) {
             $this->a = $a;
+            $this->chainB();
             $this->resetCachedResults();
         }
 
@@ -203,9 +204,8 @@ final class SequenceMatcher
     {
         if ($this->b !== $b) {
             $this->b = $b;
-            $this->resetCachedResults();
-
             $this->chainB();
+            $this->resetCachedResults();
         }
 
         return $this;

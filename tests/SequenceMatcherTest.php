@@ -345,4 +345,29 @@ NEW
 
         static::assertSame($expected, $this->sm->getGroupedOpcodes(0));
     }
+
+    /**
+     * @see https://github.com/jfcherng/php-sequence-matcher/issues/2
+     */
+    public function testCachingBugIssue2(): void
+    {
+        $old = ['a'];
+        $new = ['a', 'b', 'c'];
+
+        $this->sm->setSeq1($old)->setSeq2($new);
+
+        $old = ['a', 'b'];
+        $new = ['a', 'b', 'c'];
+
+        $this->sm->setSeq1($old)->setSeq2($new);
+
+        try {
+            // Throws ErrorException: "Undefined array key 1"
+            $this->sm->getOpcodes();
+        } catch (\Exception $e) {
+            static::fail((string) $e);
+        }
+
+        static::assertTrue(true);
+    }
 }
