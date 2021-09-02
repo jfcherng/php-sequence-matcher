@@ -719,15 +719,3 @@ final class SequenceMatcher
         return isset($this->junkDict[$b]);
     }
 }
-
-$sm = new SequenceMatcher([], []);
-$old = ['a'];
-$new = ['a', 'b', 'c'];
-
-$sm->setSeq1($old)->setSeq2($new);
-
-$old = ['a', 'b'];
-$new = ['a', 'b', 'c'];
-
-$sm->setSeq1($old)->setSeq2($new);
-$sm->getOpcodes();
