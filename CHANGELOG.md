@@ -2,6 +2,9 @@
 ## VERSION 3  LIGHTNING
 
  * Version **3.2** - Add SequenceMatcher::opStrToInt()
+   * 2021-09-02 12:02  **3.2.8**  Remove debug codes
+      * cdbb898 fix: remove debug codes
+      * 6950c24 chore: update deps
    * 2021-09-02 11:52  **3.2.7**  Fix caching bug
       * ab45b9e perf: improve setSequences() performance
       * b4b20fb fix: property caching bug
