@@ -2,6 +2,20 @@
 ## VERSION 3  LIGHTNING
 
  * Version **3.2** - Add SequenceMatcher::opStrToInt()
+   * 2021-09-02 11:52  **3.2.7**  Fix caching bug
+      * ab45b9e perf: improve setSequences() performance
+      * b4b20fb fix: property caching bug
+      * e61c314 chore: update deps
+      * b839869 chore: update deps
+      * 46424ff chore: update deps
+      * d883e23 style: php-cs-fix
+      * 23b87f7 chore: update deps
+      * e98884a fix: deprecated method in .php_cs
+      * 18785c5 chore(ci): real test against PHP 8.0
+      * 6cf1d6d chore: update deps
+      * d1101bb chore: update php-cs-fixer 2.17.0
+      * 4c7e18e chore: update deps
+      * aeaf829 chore: Composer 2 no long needs hirak/prestissimo
    * 2020-09-03 21:48  **3.2.6**  fix: empty $old or $new emits "undefined index"
       * cdbccef fix: empty $old or $new emits "undefined index"
    * 2020-08-23 18:26  **3.2.5**  fix a regression about the last output block
