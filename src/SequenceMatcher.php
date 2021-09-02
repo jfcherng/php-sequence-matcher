@@ -169,12 +169,32 @@ final class SequenceMatcher
     /**
      * Set the first and second sequences to use with the sequence matcher.
      *
+     * This method is more effecient than "->setSeq1($old)->setSeq2($new)"
+     * because it only run the routine once.
+     *
      * @param string[] $a an array containing the lines to compare against
      * @param string[] $b an array containing the lines to compare
      */
     public function setSequences(array $a, array $b): self
     {
-        return $this->setSeq1($a)->setSeq2($b);
+        $need_routine = false;
+
+        if ($this->a !== $a) {
+            $need_routine = true;
+            $this->a = $a;
+        }
+
+        if ($this->b !== $b) {
+            $need_routine = true;
+            $this->b = $b;
+        }
+
+        if ($need_routine) {
+            $this->chainB();
+            $this->resetCachedResults();
+        }
+
+        return $this;
     }
 
     /**
@@ -699,3 +719,15 @@ final class SequenceMatcher
         return isset($this->junkDict[$b]);
     }
 }
+
+$sm = new SequenceMatcher([], []);
+$old = ['a'];
+$new = ['a', 'b', 'c'];
+
+$sm->setSeq1($old)->setSeq2($new);
+
+$old = ['a', 'b'];
+$new = ['a', 'b', 'c'];
+
+$sm->setSeq1($old)->setSeq2($new);
+$sm->getOpcodes();
