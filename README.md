@@ -1,6 +1,6 @@
 # php-sequence-matcher
 
-[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/jfcherng/php-sequence-matcher/Main/master?style=flat-square)](https://github.com/jfcherng/php-sequence-matcher/actions)
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/jfcherng/php-sequence-matcher/php.yml?branch=master&style=flat-square)](https://github.com/jfcherng/php-sequence-matcher/actions)
 [![Codacy grade](https://img.shields.io/codacy/grade/f7073c3f03784bf39ed41f41f0d3fc8c/master?style=flat-square)](https://app.codacy.com/project/jfcherng/php-sequence-matcher/dashboard)
 [![Packagist](https://img.shields.io/packagist/dt/jfcherng/php-sequence-matcher?style=flat-square)](https://packagist.org/packages/jfcherng/php-sequence-matcher)
 [![Packagist Version](https://img.shields.io/packagist/v/jfcherng/php-sequence-matcher?style=flat-square)](https://packagist.org/packages/jfcherng/php-sequence-matcher)
