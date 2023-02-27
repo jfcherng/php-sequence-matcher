@@ -2,6 +2,9 @@
 ## VERSION 4  PHP81
 
  * Version **4.0** - php81
+   * 2023-02-27 11:54  **4.0.1**  fix docs
+      * b03c162 docs: fix readme badge
+      * 6b9db52 chore: test against php81,82
    * 2023-02-27 11:44  **4.0.0**  initial release
       * d02b545 refactor: some refactorings for php81
       * 4d85156 chore: bump min version to php81
