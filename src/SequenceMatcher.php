@@ -14,21 +14,21 @@ namespace Jfcherng\Diff;
 final class SequenceMatcher
 {
     /** @var int 0, opcode: no operation */
-    const OP_NOP = 0;
+    public const OP_NOP = 0;
 
     /** @var int 1, opcode: equal */
-    const OP_EQ = 1 << 0;
+    public const OP_EQ = 1 << 0;
 
     /** @var int 2, opcode: delete */
-    const OP_DEL = 1 << 1;
+    public const OP_DEL = 1 << 1;
 
     /** @var int 4, opcode: insert */
-    const OP_INS = 1 << 2;
+    public const OP_INS = 1 << 2;
 
     /** @var int 8, opcode: replace */
-    const OP_REP = 1 << 3;
+    public const OP_REP = 1 << 3;
 
-    const OP_INT_TO_STR_MAP = [
+    public const OP_INT_TO_STR_MAP = [
         self::OP_NOP => 'nop',
         self::OP_EQ => 'eq',
         self::OP_DEL => 'del',
@@ -36,7 +36,7 @@ final class SequenceMatcher
         self::OP_REP => 'rep',
     ];
 
-    const OP_STR_TO_INT_MAP = [
+    public const OP_STR_TO_INT_MAP = [
         'nop' => self::OP_NOP,
         'eq' => self::OP_EQ,
         'del' => self::OP_DEL,
@@ -50,65 +50,56 @@ final class SequenceMatcher
      *
      * @var string
      */
-    const APPENDED_HELPER_LINE = "\u{fcf28}\u{fc232}";
+    public const APPENDED_HELPER_LINE = "\u{fcf28}\u{fc232}";
 
     /**
-     * @var null|callable either a string or an array containing a callback function to determine if a line is "junk" or not
+     * @var null|\Closure either a string or an array containing a callback function to determine if a line is "junk" or not
      */
-    private $junkCallback;
+    private ?\Closure $junkCallback;
 
     /**
      * @var array the first sequence to compare against
      */
-    private $a = [];
+    private array $a = [];
 
     /**
      * @var array the second sequence
      */
-    private $b = [];
+    private array $b = [];
 
     /**
      * @var array the first sequence to compare against (transformed)
      */
-    private $at = [];
+    private array $at = [];
 
     /**
      * @var array the second sequence (transformed)
      */
-    private $bt = [];
+    private array $bt = [];
 
     /**
      * @var array array of characters that are considered junk from the second sequence. Characters are the array key.
      */
-    private $junkDict = [];
+    private array $junkDict = [];
 
     /**
      * @var array array of indices that do not contain junk elements
      */
-    private $b2j = [];
+    private array $b2j = [];
 
-    /**
-     * @var array
-     */
-    private $options = [];
+    private array $options = [];
 
-    /**
-     * @var array
-     */
-    private static $defaultOptions = [
+    private static array $defaultOptions = [
         'ignoreWhitespace' => false,
         'ignoreCase' => false,
     ];
 
-    /**
-     * @var array
-     */
-    private $matchingBlocks = [];
+    private array $matchingBlocks = [];
 
     /**
      * @var array generated opcodes which manipulates seq1 to seq2
      */
-    private $opcodes = [];
+    private array $opcodes = [];
 
     /**
      * The constructor. With the sequences being passed, they'll be set
@@ -117,10 +108,10 @@ final class SequenceMatcher
      *
      * @param string[]      $a            an array containing the lines to compare against
      * @param string[]      $b            an array containing the lines to compare
-     * @param null|callable $junkCallback either an array or string that references a callback function (if there is one) to determine 'junk' characters
+     * @param null|\Closure $junkCallback either an array or string that references a callback function (if there is one) to determine 'junk' characters
      * @param array         $options      the options
      */
-    public function __construct(array $a, array $b, ?callable $junkCallback = null, array $options = [])
+    public function __construct(array $a, array $b, ?\Closure $junkCallback = null, array $options = [])
     {
         $this->junkCallback = $junkCallback;
         $this->setOptions($options);
@@ -132,7 +123,7 @@ final class SequenceMatcher
      *
      * @param array $options The options
      */
-    public function setOptions(array $options): self
+    public function setOptions(array $options): static
     {
         $needRerunChainB = $this->isAnyOptionChanged($this->options, $options, ['ignoreCase', 'ignoreWhitespace']);
 
@@ -158,7 +149,7 @@ final class SequenceMatcher
     /**
      * Reset cached results.
      */
-    public function resetCachedResults(): self
+    public function resetCachedResults(): static
     {
         $this->matchingBlocks = [];
         $this->opcodes = [];
@@ -175,7 +166,7 @@ final class SequenceMatcher
      * @param string[] $a an array containing the lines to compare against
      * @param string[] $b an array containing the lines to compare
      */
-    public function setSequences(array $a, array $b): self
+    public function setSequences(array $a, array $b): static
     {
         $need_routine = false;
 
@@ -203,7 +194,7 @@ final class SequenceMatcher
      *
      * @param string[] $a the sequence to set as the first sequence
      */
-    public function setSeq1(array $a): self
+    public function setSeq1(array $a): static
     {
         if ($this->a !== $a) {
             $this->a = $a;
@@ -220,7 +211,7 @@ final class SequenceMatcher
      *
      * @param string[] $b the sequence to set as the second sequence
      */
-    public function setSeq2(array $b): self
+    public function setSeq2(array $b): static
     {
         if ($this->b !== $b) {
             $this->b = $b;
@@ -357,7 +348,7 @@ final class SequenceMatcher
 
         $matchingBlocks = [];
         while (!empty($queue)) {
-            [$alo, $ahi, $blo, $bhi] = \array_pop($queue);
+            [$alo, $ahi, $blo, $bhi] = array_pop($queue);
             [$i, $j, $k] = $x = $this->findLongestMatch($alo, $ahi, $blo, $bhi);
 
             if ($k) {
@@ -373,10 +364,10 @@ final class SequenceMatcher
             }
         }
 
-        \usort($matchingBlocks, function (array $a, array $b): int {
+        usort($matchingBlocks, function (array $a, array $b): int {
             $aCount = \count($a);
             $bCount = \count($b);
-            $min = \min($aCount, $bCount);
+            $min = min($aCount, $bCount);
 
             for ($i = 0; $i < $min; ++$i) {
                 if ($a[$i] !== $b[$i]) {
@@ -422,13 +413,13 @@ final class SequenceMatcher
      *
      * The nested array returned contains an array describing the opcode
      * which includes:
-     * 0 - The type of tag (as described below) for the opcode.
+     * 0 - The type of op (as described below) for the opcode.
      * 1 - The beginning line in the first sequence.
      * 2 - The end line in the first sequence.
      * 3 - The beginning line in the second sequence.
      * 4 - The end line in the second sequence.
      *
-     * The different types of tags include:
+     * The different types of ops include:
      * replace - The string from $i1 to $i2 in $a should be replaced by
      *           the string in $b from $j1 to $j2.
      * delete -  The string in $a from $i1 to $j2 should be deleted.
@@ -449,17 +440,17 @@ final class SequenceMatcher
 
         foreach ($this->getMatchingBlocks() as [$ai, $bj, $size]) {
             if ($i < $ai && $j < $bj) {
-                $tag = self::OP_REP;
+                $op = self::OP_REP;
             } elseif ($i < $ai) {
-                $tag = self::OP_DEL;
+                $op = self::OP_DEL;
             } elseif ($j < $bj) {
-                $tag = self::OP_INS;
+                $op = self::OP_INS;
             } else {
-                $tag = self::OP_NOP;
+                $op = self::OP_NOP;
             }
 
-            if ($tag) {
-                $this->opcodes[] = [$tag, $i, $ai, $j, $bj];
+            if ($op) {
+                $this->opcodes[] = [$op, $i, $ai, $j, $bj];
             }
 
             $i = $ai + $size;
@@ -502,44 +493,44 @@ final class SequenceMatcher
             // fix the leading sequence which is out of context.
             $opcodes[0] = [
                 $opcodes[0][0],
-                \max($opcodes[0][1], $opcodes[0][2] - $context),
+                max($opcodes[0][1], $opcodes[0][2] - $context),
                 $opcodes[0][2],
-                \max($opcodes[0][3], $opcodes[0][4] - $context),
+                max($opcodes[0][3], $opcodes[0][4] - $context),
                 $opcodes[0][4],
             ];
         }
 
         $lastItem = \count($opcodes) - 1;
         if ($opcodes[$lastItem][0] === self::OP_EQ) {
-            [$tag, $i1, $i2, $j1, $j2] = $opcodes[$lastItem];
+            [$op, $i1, $i2, $j1, $j2] = $opcodes[$lastItem];
             // fix the trailing sequence which is out of context.
             $opcodes[$lastItem] = [
-                $tag,
+                $op,
                 $i1,
-                \min($i2, $i1 + $context),
+                min($i2, $i1 + $context),
                 $j1,
-                \min($j2, $j1 + $context),
+                min($j2, $j1 + $context),
             ];
         }
 
         $maxRange = $context << 1;
         $groups = $group = [];
-        foreach ($opcodes as [$tag, $i1, $i2, $j1, $j2]) {
-            if ($tag === self::OP_EQ && $i2 - $i1 > $maxRange) {
+        foreach ($opcodes as [$op, $i1, $i2, $j1, $j2]) {
+            if ($op === self::OP_EQ && $i2 - $i1 > $maxRange) {
                 $group[] = [
-                    $tag,
+                    $op,
                     $i1,
-                    \min($i2, $i1 + $context),
+                    min($i2, $i1 + $context),
                     $j1,
-                    \min($j2, $j1 + $context),
+                    min($j2, $j1 + $context),
                 ];
                 $groups[] = $group;
                 $group = [];
-                $i1 = \max($i1, $i2 - $context);
-                $j1 = \max($j1, $j2 - $context);
+                $i1 = max($i1, $i2 - $context);
+                $j1 = max($j1, $j2 - $context);
             }
 
-            $group[] = [$tag, $i1, $i2, $j1, $j2];
+            $group[] = [$op, $i1, $i2, $j1, $j2];
         }
 
         if (
@@ -643,11 +634,11 @@ final class SequenceMatcher
         if ($this->options['ignoreWhitespace']) {
             static $whitespaces = [' ', "\t", "\r", "\n"];
 
-            $line = \str_replace($whitespaces, '', $line);
+            $line = str_replace($whitespaces, '', $line);
         }
 
         if ($this->options['ignoreCase']) {
-            $line = \strtolower($line);
+            $line = strtolower($line);
         }
 
         return $line;
@@ -657,10 +648,10 @@ final class SequenceMatcher
      * Generate the internal arrays containing the list of junk and non-junk
      * characters for the second ($b) sequence.
      */
-    private function chainB(): self
+    private function chainB(): static
     {
-        $this->at = \array_map([$this, 'processLineWithOptions'], $this->a);
-        $this->bt = \array_map([$this, 'processLineWithOptions'], $this->b);
+        $this->at = array_map([$this, 'processLineWithOptions'], $this->a);
+        $this->bt = array_map([$this, 'processLineWithOptions'], $this->b);
 
         $length = \count($this->bt);
         $this->b2j = [];
@@ -684,20 +675,20 @@ final class SequenceMatcher
         }
 
         // remove leftovers
-        foreach (\array_keys($popularDict) as $char) {
+        foreach (array_keys($popularDict) as $char) {
             unset($this->b2j[$char]);
         }
 
         $this->junkDict = [];
         if (\is_callable($this->junkCallback)) {
-            foreach (\array_keys($popularDict) as $char) {
+            foreach (array_keys($popularDict) as $char) {
                 if (($this->junkCallback)($char)) {
                     $this->junkDict[$char] = 1;
                     unset($popularDict[$char]);
                 }
             }
 
-            foreach (\array_keys($this->b2j) as $char) {
+            foreach (array_keys($this->b2j) as $char) {
                 if (($this->junkCallback)($char)) {
                     $this->junkDict[$char] = 1;
                     unset($this->b2j[$char]);
