@@ -13,7 +13,7 @@ A longest sequence matcher. The logic is primarily based on the Python [difflib]
 
 ## Requirements
 
-![php](https://img.shields.io/badge/php-%5E7.1.3-blue?style=flat-square)
+![php](https://img.shields.io/badge/php-%E2%89%A58.1.0-blue?style=flat-square)
 
 
 ## Installation
