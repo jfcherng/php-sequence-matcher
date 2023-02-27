@@ -1,4 +1,14 @@
 
+## VERSION 4  PHP81
+
+ * Version **4.0** - php81
+   * 2023-02-27 11:44  **4.0.0**  initial release
+      * d02b545 refactor: some refactorings for php81
+      * 4d85156 chore: bump min version to php81
+      * f58b6c8 choer: license year +1
+      * 3292277 docs: fix build status badge in readme
+      * 8193ba2 chore: license year +1
+
 ## VERSION 3  LIGHTNING
 
  * Version **3.2** - Add SequenceMatcher::opStrToInt()
