@@ -221,9 +221,9 @@ EOT
      * @covers       \Jfcherng\Diff\SequenceMatcher::getOpcodes
      * @dataProvider getOpcodesDataProvider
      *
-     * @param string $old      the old
-     * @param string $new      the new
-     * @param array  $expected the expected
+     * @param string[] $old      the old
+     * @param string[] $new      the new
+     * @param array    $expected the expected
      */
     public function testGetOpcodes(array $old, array $new, array $expected): void
     {
@@ -233,11 +233,11 @@ EOT
     }
 
     /**
-     * Data provider for SequenceMatcher::getGroupedOpcodes with "ignoreWhitespaces".
+     * Data provider for SequenceMatcher::getGroupedOpcodes with "ignoreWhitespace".
      *
      * @return array the data provider
      */
-    public function getGroupedOpcodesIgnoreWhitespacesDataProvider(): array
+    public function getGroupedOpcodesIgnoreWhitespaceDataProvider(): array
     {
         return [
             [
@@ -317,8 +317,8 @@ NEW
                 ],
             ],
             [
-                \file_get_contents(__DIR__ . '/data/WorkerCommandA.php'),
-                \file_get_contents(__DIR__ . '/data/WorkerCommandB.php'),
+                \file_get_contents(__DIR__ . '/data/ignore_whitespace/old_1.php'),
+                \file_get_contents(__DIR__ . '/data/ignore_whitespace/new_1.php'),
                 [
                     [
                         [SequenceMatcher::OP_DEL, 217, 222, 217, 217],
@@ -329,19 +329,69 @@ NEW
     }
 
     /**
-     * Test the SequenceMatcher::getOpcodes with "ignoreWhitespaces".
+     * Data provider for SequenceMatcher::getGroupedOpcodes with "ignoreLineEnding".
+     *
+     * @return array the data provider
+     */
+    public function getGroupedOpcodesIgnoreLineEndingDataProvider(): array
+    {
+        return [
+            [
+                \file_get_contents(__DIR__ . '/data/ignore_line_ending/old_1.txt'),
+                \file_get_contents(__DIR__ . '/data/ignore_line_ending/new_1.txt'),
+                [],
+                true,
+            ],
+            [
+                \file_get_contents(__DIR__ . '/data/ignore_line_ending/old_1.txt'),
+                \file_get_contents(__DIR__ . '/data/ignore_line_ending/new_1.txt'),
+                [
+                    [
+                        [SequenceMatcher::OP_REP, 0, 2, 0, 2],
+                    ],
+                ],
+                false,
+            ],
+        ];
+    }
+
+    /**
+     * Test the SequenceMatcher::getOpcodes with "ignoreWhitespace".
      *
      * @covers       \Jfcherng\Diff\SequenceMatcher::getOpcodes
-     * @dataProvider getGroupedOpcodesIgnoreWhitespacesDataProvider
+     * @dataProvider getGroupedOpcodesIgnoreWhitespaceDataProvider
      *
      * @param string $old      the old
      * @param string $new      the new
      * @param array  $expected the expected
      */
-    public function testGetOpcodesIgnoreWhitespaces(string $old, string $new, array $expected): void
+    public function testGetOpcodesIgnoreWhitespace(string $old, string $new, array $expected): void
     {
         $this->sm->setSequences(\explode("\n", $old), \explode("\n", $new));
         $this->sm->setOptions(['ignoreWhitespace' => true]);
+
+        static::assertSame($expected, $this->sm->getGroupedOpcodes(0));
+    }
+
+    /**
+     * Test the SequenceMatcher::getOpcodes with "ignoreLineEnding".
+     *
+     * @covers       \Jfcherng\Diff\SequenceMatcher::getOpcodes
+     * @dataProvider getGroupedOpcodesIgnoreLineEndingDataProvider
+     *
+     * @param string $old              the old
+     * @param string $new              the new
+     * @param array  $expected         the expected
+     * @param array  $ignoreLineEnding should ignore line ending
+     */
+    public function testGetOpcodesIgnoreLineEnding(
+        string $old,
+        string $new,
+        array $expected,
+        bool $ignoreLineEnding
+    ): void {
+        $this->sm->setSequences(\explode("\n", $old), \explode("\n", $new));
+        $this->sm->setOptions(['ignoreLineEnding' => $ignoreLineEnding]);
 
         static::assertSame($expected, $this->sm->getGroupedOpcodes(0));
     }
