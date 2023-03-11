@@ -90,8 +90,9 @@ final class SequenceMatcher
     private array $options = [];
 
     private static array $defaultOptions = [
-        'ignoreWhitespace' => false,
         'ignoreCase' => false,
+        'ignoreLineEnding' => false,
+        'ignoreWhitespace' => false,
     ];
 
     private array $matchingBlocks = [];
@@ -125,7 +126,11 @@ final class SequenceMatcher
      */
     public function setOptions(array $options): static
     {
-        $needRerunChainB = $this->isAnyOptionChanged($this->options, $options, ['ignoreCase', 'ignoreWhitespace']);
+        $needRerunChainB = $this->isAnyOptionChanged(
+            $this->options,
+            $options,
+            ['ignoreCase', 'ignoreLineEnding', 'ignoreWhitespace'],
+        );
 
         $this->options = $options + self::$defaultOptions;
 
@@ -639,6 +644,10 @@ final class SequenceMatcher
 
         if ($this->options['ignoreCase']) {
             $line = strtolower($line);
+        }
+
+        if ($this->options['ignoreLineEnding']) {
+            $line = rtrim($line, "\r\n");
         }
 
         return $line;
