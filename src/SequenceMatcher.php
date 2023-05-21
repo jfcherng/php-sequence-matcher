@@ -99,6 +99,7 @@ final class SequenceMatcher
         'ignoreCase' => false,
         'ignoreLineEnding' => false,
         'ignoreWhitespace' => false,
+        'lengthLimit' => 2000,
     ];
 
     /**
@@ -138,7 +139,7 @@ final class SequenceMatcher
         $needRerunChainB = $this->isAnyOptionChanged(
             $this->options,
             $options,
-            ['ignoreCase', 'ignoreLineEnding', 'ignoreWhitespace']
+            ['ignoreCase', 'ignoreLineEnding', 'ignoreWhitespace', 'lengthLimit']
         );
 
         $this->options = $options + self::$defaultOptions;
@@ -680,7 +681,7 @@ final class SequenceMatcher
             $this->b2j[$char] = $this->b2j[$char] ?? [];
 
             if (
-                $length >= 1000
+                $length >= $this->options['lengthLimit']
                 && \count($this->b2j[$char]) * 100 > $length
                 && $char !== self::APPENDED_HELPER_LINE
             ) {
