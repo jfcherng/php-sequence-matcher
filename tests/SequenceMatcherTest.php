@@ -1,5 +1,7 @@
 <?php
 
+// @php-cs-fixer-ignore heredoc_indentation
+
 declare(strict_types=1);
 
 namespace Jfcherng\Diff\Test;
@@ -18,7 +20,7 @@ final class SequenceMatcherTest extends TestCase
     /**
      * The SequenceMatcher object.
      *
-     * @var \Jfcherng\Diff\SequenceMatcher
+     * @var SequenceMatcher
      */
     protected $sm;
 
@@ -31,11 +33,31 @@ final class SequenceMatcherTest extends TestCase
     }
 
     /**
+     * Test the SequenceMatcher::getGroupedOpcodes.
+     *
+     * @covers       \Jfcherng\Diff\SequenceMatcher::getGroupedOpcodes
+     *
+     * @param string $old      the old
+     * @param string $new      the new
+     * @param array  $expected the expected
+     */
+    #[DataProvider('provideGetGroupedOpcodesCases')]
+    public function testGetGroupedOpcodes(string $old, string $new, array $expected): void
+    {
+        $this->sm->setSequences(
+            explode("\n", $old),
+            explode("\n", $new),
+        );
+
+        self::assertSame($expected, $this->sm->getGroupedOpcodes());
+    }
+
+    /**
      * Data provider for SequenceMatcher::getGroupedOpcodes.
      *
      * @return array the data provider
      */
-    public static function getGroupedOpcodesDataProvider(): array
+    public static function provideGetGroupedOpcodesCases(): iterable
     {
         return [
             [
@@ -44,15 +66,13 @@ A
 B
 C
 D
-EOT
-                ,
+EOT,
                 <<<'EOT'
 A
 B
 C
 D
-EOT
-                ,
+EOT,
                 [],
             ],
             [
@@ -61,15 +81,13 @@ apples
 oranges
 kiwis
 carrots
-EOT
-                ,
+EOT,
                 <<<'EOT'
 apples
 kiwis
 carrots
 grapefruits
-EOT
-                ,
+EOT,
                 [
                     [
                         [SequenceMatcher::OP_EQ, 0, 1, 0, 1],
@@ -91,15 +109,15 @@ EOT
      * @param string $new      the new
      * @param array  $expected the expected
      */
-    #[DataProvider('getGroupedOpcodesDataProvider')]
-    public function testGetGroupedOpcodes(string $old, string $new, array $expected): void
+    #[DataProvider('provideGetGroupedOpcodesWithZeroContextCases')]
+    public function testGetGroupedOpcodesWithZeroContext(string $old, string $new, array $expected): void
     {
         $this->sm->setSequences(
             explode("\n", $old),
             explode("\n", $new),
         );
 
-        static::assertSame($expected, $this->sm->getGroupedOpcodes());
+        self::assertSame($expected, $this->sm->getGroupedOpcodes(0));
     }
 
     /**
@@ -107,7 +125,7 @@ EOT
      *
      * @return array the data provider
      */
-    public static function getGroupedOpcodesWithZeroContextDataProvider(): array
+    public static function provideGetGroupedOpcodesWithZeroContextCases(): iterable
     {
         return [
             [
@@ -116,15 +134,13 @@ A
 B
 C
 D
-EOT
-                ,
+EOT,
                 <<<'EOT'
 A
 B
 C
 D
-EOT
-                ,
+EOT,
                 [],
             ],
             [
@@ -133,15 +149,13 @@ A
 B
 C
 D
-EOT
-                ,
+EOT,
                 <<<'EOT'
 A
 B
 X
 D
-EOT
-                ,
+EOT,
                 [
                     [
                         [SequenceMatcher::OP_REP, 2, 3, 2, 3],
@@ -152,23 +166,20 @@ EOT
     }
 
     /**
-     * Test the SequenceMatcher::getGroupedOpcodes.
+     * Test the SequenceMatcher::getOpcodes.
      *
-     * @covers       \Jfcherng\Diff\SequenceMatcher::getGroupedOpcodes
+     * @covers       \Jfcherng\Diff\SequenceMatcher::getOpcodes
      *
-     * @param string $old      the old
-     * @param string $new      the new
-     * @param array  $expected the expected
+     * @param string[] $old      the old
+     * @param string[] $new      the new
+     * @param array    $expected the expected
      */
-    #[DataProvider('getGroupedOpcodesWithZeroContextDataProvider')]
-    public function testGetGroupedOpcodesWithZeroContext(string $old, string $new, array $expected): void
+    #[DataProvider('provideGetOpcodesCases')]
+    public function testGetOpcodes(array $old, array $new, array $expected): void
     {
-        $this->sm->setSequences(
-            explode("\n", $old),
-            explode("\n", $new),
-        );
+        $this->sm->setSequences($old, $new);
 
-        static::assertSame($expected, $this->sm->getGroupedOpcodes(0));
+        self::assertSame($expected, $this->sm->getOpcodes());
     }
 
     /**
@@ -176,7 +187,7 @@ EOT
      *
      * @return array the data provider
      */
-    public static function getOpcodesDataProvider(): array
+    public static function provideGetOpcodesCases(): iterable
     {
         return [
             [
@@ -217,20 +228,21 @@ EOT
     }
 
     /**
-     * Test the SequenceMatcher::getOpcodes.
+     * Test the SequenceMatcher::getOpcodes with "ignoreWhitespace".
      *
      * @covers       \Jfcherng\Diff\SequenceMatcher::getOpcodes
      *
-     * @param string[] $old      the old
-     * @param string[] $new      the new
-     * @param array    $expected the expected
+     * @param string $old      the old
+     * @param string $new      the new
+     * @param array  $expected the expected
      */
-    #[DataProvider('getOpcodesDataProvider')]
-    public function testGetOpcodes(array $old, array $new, array $expected): void
+    #[DataProvider('provideGetOpcodesIgnoreWhitespacesCases')]
+    public function testGetOpcodesIgnoreWhitespaces(string $old, string $new, array $expected): void
     {
-        $this->sm->setSequences($old, $new);
+        $this->sm->setSequences(explode("\n", $old), explode("\n", $new));
+        $this->sm->setOptions(['ignoreWhitespace' => true]);
 
-        static::assertSame($expected, $this->sm->getOpcodes());
+        self::assertSame($expected, $this->sm->getGroupedOpcodes(0));
     }
 
     /**
@@ -238,7 +250,7 @@ EOT
      *
      * @return array the data provider
      */
-    public static function getGroupedOpcodesIgnoreWhitespaceDataProvider(): array
+    public static function provideGetOpcodesIgnoreWhitespacesCases(): iterable
     {
         return [
             [
@@ -254,8 +266,7 @@ function foo(\DateTimeImmutable $date)
     }
 }
 
-OLD
-                ,
+OLD,
                 <<<'NEW'
 <?php
 
@@ -264,8 +275,7 @@ function foo(\DateTimeImmutable $date)
     echo 'foo';
 }
 
-NEW
-                ,
+NEW,
                 [
                     [
                         [SequenceMatcher::OP_DEL, 4, 5, 4, 4],
@@ -294,8 +304,7 @@ class Foo
 
 }
 
-OLD
-                ,
+OLD,
                 <<<'NEW'
 <?php
 
@@ -309,8 +318,7 @@ class Foo
 
 }
 
-NEW
-                ,
+NEW,
                 [
                     [
                         [SequenceMatcher::OP_DEL, 8, 13, 8, 8],
@@ -330,11 +338,36 @@ NEW
     }
 
     /**
+     * Test the SequenceMatcher::getOpcodes with "ignoreLineEnding".
+     *
+     * @covers       \Jfcherng\Diff\SequenceMatcher::getOpcodes
+     *
+     * @dataProvider provideGetOpcodesIgnoreLineEndingCases
+     *
+     * @param string $old              the old
+     * @param string $new              the new
+     * @param array  $expected         the expected
+     * @param array  $ignoreLineEnding should ignore line ending
+     */
+    #[DataProvider('provideGetOpcodesIgnoreLineEndingCases')]
+    public function testGetOpcodesIgnoreLineEnding(
+        string $old,
+        string $new,
+        array $expected,
+        bool $ignoreLineEnding
+    ): void {
+        $this->sm->setSequences(explode("\n", $old), explode("\n", $new));
+        $this->sm->setOptions(['ignoreLineEnding' => $ignoreLineEnding]);
+
+        self::assertSame($expected, $this->sm->getGroupedOpcodes(0));
+    }
+
+    /**
      * Data provider for SequenceMatcher::getGroupedOpcodes with "ignoreLineEnding".
      *
      * @return array the data provider
      */
-    public static function getGroupedOpcodesIgnoreLineEndingDataProvider(): array
+    public static function provideGetOpcodesIgnoreLineEndingCases(): iterable
     {
         return [
             [
@@ -357,48 +390,6 @@ NEW
     }
 
     /**
-     * Test the SequenceMatcher::getOpcodes with "ignoreWhitespace".
-     *
-     * @covers       \Jfcherng\Diff\SequenceMatcher::getOpcodes
-     *
-     * @param string $old      the old
-     * @param string $new      the new
-     * @param array  $expected the expected
-     */
-    #[DataProvider('getGroupedOpcodesIgnoreWhitespaceDataProvider')]
-    public function testGetOpcodesIgnoreWhitespaces(string $old, string $new, array $expected): void
-    {
-        $this->sm->setSequences(explode("\n", $old), explode("\n", $new));
-        $this->sm->setOptions(['ignoreWhitespace' => true]);
-
-        static::assertSame($expected, $this->sm->getGroupedOpcodes(0));
-    }
-
-    /**
-     * Test the SequenceMatcher::getOpcodes with "ignoreLineEnding".
-     *
-     * @covers       \Jfcherng\Diff\SequenceMatcher::getOpcodes
-     *
-     * @dataProvider getGroupedOpcodesIgnoreLineEndingDataProvider
-     *
-     * @param string $old              the old
-     * @param string $new              the new
-     * @param array  $expected         the expected
-     * @param array  $ignoreLineEnding should ignore line ending
-     */
-    public function testGetOpcodesIgnoreLineEnding(
-        string $old,
-        string $new,
-        array $expected,
-        bool $ignoreLineEnding
-    ): void {
-        $this->sm->setSequences(explode("\n", $old), explode("\n", $new));
-        $this->sm->setOptions(['ignoreLineEnding' => $ignoreLineEnding]);
-
-        static::assertSame($expected, $this->sm->getGroupedOpcodes(0));
-    }
-
-    /**
      * @see https://github.com/jfcherng/php-sequence-matcher/issues/2
      */
     public function testCachingBugIssue2(): void
@@ -417,9 +408,9 @@ NEW
             // Throws ErrorException: "Undefined array key 1"
             $this->sm->getOpcodes();
         } catch (\Exception $e) {
-            static::fail((string) $e);
+            self::fail((string) $e);
         }
 
-        static::assertTrue(true);
+        self::assertTrue(true);
     }
 }

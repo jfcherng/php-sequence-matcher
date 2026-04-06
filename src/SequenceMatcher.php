@@ -14,21 +14,21 @@ namespace Jfcherng\Diff;
 final class SequenceMatcher
 {
     /** @var int 0, opcode: no operation */
-    public const OP_NOP = 0;
+    public const int OP_NOP = 0;
 
     /** @var int 1, opcode: equal */
-    public const OP_EQ = 1 << 0;
+    public const int OP_EQ = 1 << 0;
 
     /** @var int 2, opcode: delete */
-    public const OP_DEL = 1 << 1;
+    public const int OP_DEL = 1 << 1;
 
     /** @var int 4, opcode: insert */
-    public const OP_INS = 1 << 2;
+    public const int OP_INS = 1 << 2;
 
     /** @var int 8, opcode: replace */
-    public const OP_REP = 1 << 3;
+    public const int OP_REP = 1 << 3;
 
-    public const OP_INT_TO_STR_MAP = [
+    public const array OP_INT_TO_STR_MAP = [
         self::OP_NOP => 'nop',
         self::OP_EQ => 'eq',
         self::OP_DEL => 'del',
@@ -36,7 +36,7 @@ final class SequenceMatcher
         self::OP_REP => 'rep',
     ];
 
-    public const OP_STR_TO_INT_MAP = [
+    public const array OP_STR_TO_INT_MAP = [
         'nop' => self::OP_NOP,
         'eq' => self::OP_EQ,
         'del' => self::OP_DEL,
@@ -50,7 +50,7 @@ final class SequenceMatcher
      *
      * @var string
      */
-    public const APPENDED_HELPER_LINE = "\u{fcf28}\u{fc232}";
+    public const string APPENDED_HELPER_LINE = "\u{fcf28}\u{fc232}";
 
     /**
      * @var null|\Closure either a string or an array containing a callback function to determine if a line is "junk" or not
@@ -669,7 +669,7 @@ final class SequenceMatcher
 
         for ($i = 0; $i < $length; ++$i) {
             $char = $this->bt[$i];
-            $this->b2j[$char] = $this->b2j[$char] ?? [];
+            $this->b2j[$char] ??= [];
 
             if (
                 $length >= $this->options['lengthLimit']
