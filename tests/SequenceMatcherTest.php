@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace Jfcherng\Diff\Test;
 
 use Jfcherng\Diff\SequenceMatcher;
+use Jfcherng\Diff\SequenceMatcherOptions;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -44,10 +45,7 @@ final class SequenceMatcherTest extends TestCase
     #[DataProvider('provideGetGroupedOpcodesCases')]
     public function testGetGroupedOpcodes(string $old, string $new, array $expected): void
     {
-        $this->sm->setSequences(
-            explode("\n", $old),
-            explode("\n", $new),
-        );
+        $this->sm->setSequences(explode("\n", $old), explode("\n", $new));
 
         self::assertSame($expected, $this->sm->getGroupedOpcodes());
     }
@@ -240,7 +238,7 @@ EOT,
     public function testGetOpcodesIgnoreWhitespaces(string $old, string $new, array $expected): void
     {
         $this->sm->setSequences(explode("\n", $old), explode("\n", $new));
-        $this->sm->setOptions(['ignoreWhitespace' => true]);
+        $this->sm->setOptions(new SequenceMatcherOptions(ignoreWhitespace: true));
 
         self::assertSame($expected, $this->sm->getGroupedOpcodes(0));
     }
@@ -347,7 +345,7 @@ NEW,
      * @param string $old              the old
      * @param string $new              the new
      * @param array  $expected         the expected
-     * @param array  $ignoreLineEnding should ignore line ending
+     * @param bool   $ignoreLineEnding should ignore line ending
      */
     #[DataProvider('provideGetOpcodesIgnoreLineEndingCases')]
     public function testGetOpcodesIgnoreLineEnding(
@@ -357,7 +355,7 @@ NEW,
         bool $ignoreLineEnding
     ): void {
         $this->sm->setSequences(explode("\n", $old), explode("\n", $new));
-        $this->sm->setOptions(['ignoreLineEnding' => $ignoreLineEnding]);
+        $this->sm->setOptions(new SequenceMatcherOptions(ignoreLineEnding: $ignoreLineEnding));
 
         self::assertSame($expected, $this->sm->getGroupedOpcodes(0));
     }
@@ -396,12 +394,10 @@ NEW,
     {
         $old = ['a'];
         $new = ['a', 'b', 'c'];
-
         $this->sm->setSeq1($old)->setSeq2($new);
 
         $old = ['a', 'b'];
         $new = ['a', 'b', 'c'];
-
         $this->sm->setSeq1($old)->setSeq2($new);
 
         try {
@@ -412,5 +408,39 @@ NEW,
         }
 
         self::assertTrue(true);
+    }
+
+    /**
+     * @covers \Jfcherng\Diff\SequenceMatcher::opIntToStr
+     * @covers \Jfcherng\Diff\SequenceMatcher::opStrToInt
+     */
+    public function testOpConversionRoundTrip(): void
+    {
+        foreach (SequenceMatcher::OP_INT_TO_STR_MAP as $int => $str) {
+            self::assertSame($str, SequenceMatcher::opIntToStr($int));
+            self::assertSame($int, SequenceMatcher::opStrToInt($str));
+        }
+    }
+
+    /**
+     * @covers \Jfcherng\Diff\SequenceMatcher::opIntToStr
+     */
+    public function testOpIntToStrThrowsOnInvalidInput(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid OP: 999');
+
+        SequenceMatcher::opIntToStr(999);
+    }
+
+    /**
+     * @covers \Jfcherng\Diff\SequenceMatcher::opStrToInt
+     */
+    public function testOpStrToIntThrowsOnInvalidInput(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid OP: bad');
+
+        SequenceMatcher::opStrToInt('bad');
     }
 }

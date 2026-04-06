@@ -52,8 +52,11 @@ final class SequenceMatcher
      */
     public const string APPENDED_HELPER_LINE = "\u{fcf28}\u{fc232}";
 
+    /** @var string[] characters treated as whitespace when ignoreWhitespace is enabled */
+    private const array WHITESPACE_CHARS = [' ', "\t", "\r", "\n"];
+
     /**
-     * @var null|\Closure either a string or an array containing a callback function to determine if a line is "junk" or not
+     * @var null|\Closure callback to determine if a line is "junk" or not
      */
     private ?\Closure $junkCallback;
 
@@ -87,14 +90,7 @@ final class SequenceMatcher
      */
     private array $b2j = [];
 
-    private array $options = [];
-
-    private static array $defaultOptions = [
-        'ignoreCase' => false,
-        'ignoreLineEnding' => false,
-        'ignoreWhitespace' => false,
-        'lengthLimit' => 2000,
-    ];
+    private SequenceMatcherOptions $options;
 
     private array $matchingBlocks = [];
 
@@ -108,13 +104,17 @@ final class SequenceMatcher
      * for the sequence matcher and it will perform a basic cleanup &
      * calculate junk elements.
      *
-     * @param string[]      $a            an array containing the lines to compare against
-     * @param string[]      $b            an array containing the lines to compare
-     * @param null|\Closure $junkCallback either an array or string that references a callback function (if there is one) to determine 'junk' characters
-     * @param array         $options      the options
+     * @param string[]               $a            an array containing the lines to compare against
+     * @param string[]               $b            an array containing the lines to compare
+     * @param null|\Closure          $junkCallback a callback function to determine 'junk' characters
+     * @param SequenceMatcherOptions $options      the options
      */
-    public function __construct(array $a, array $b, ?\Closure $junkCallback = null, array $options = [])
-    {
+    public function __construct(
+        array $a,
+        array $b,
+        ?\Closure $junkCallback = null,
+        SequenceMatcherOptions $options = new SequenceMatcherOptions(),
+    ) {
         $this->junkCallback = $junkCallback;
         $this->setOptions($options);
         $this->setSequences($a, $b);
@@ -123,17 +123,13 @@ final class SequenceMatcher
     /**
      * Set the options.
      *
-     * @param array $options The options
+     * @param SequenceMatcherOptions $options the options
      */
-    public function setOptions(array $options): static
+    public function setOptions(SequenceMatcherOptions $options): static
     {
-        $needRerunChainB = $this->isAnyOptionChanged(
-            $this->options,
-            $options,
-            ['ignoreCase', 'ignoreLineEnding', 'ignoreWhitespace', 'lengthLimit'],
-        );
+        $needRerunChainB = isset($this->options) && $this->options->isDifferent($options);
 
-        $this->options = $options + self::$defaultOptions;
+        $this->options = $options;
 
         if ($needRerunChainB) {
             $this->chainB();
@@ -147,7 +143,7 @@ final class SequenceMatcher
     /**
      * Get the options.
      */
-    public function getOptions(): array
+    public function getOptions(): SequenceMatcherOptions
     {
         return $this->options;
     }
@@ -246,7 +242,8 @@ final class SequenceMatcher
      * @param int $blo the lower constraint for the second sequence
      * @param int $bhi the upper constraint for the second sequence
      *
-     * @return int[] an array containing the longest match that includes the starting position in $a, start in $b and the length/size
+     * @return int[] an array containing the longest match: starting position in $a,
+     *               starting position in $b, and the match length
      */
     public function findLongestMatch(int $alo, int $ahi, int $blo, int $bhi): array
     {
@@ -611,24 +608,6 @@ final class SequenceMatcher
     }
 
     /**
-     * Determine if any option under test changed.
-     *
-     * @param array $old  the old options
-     * @param array $new  the new options
-     * @param array $keys the option keys under test
-     */
-    private function isAnyOptionChanged(array $old, array $new, array $keys): bool
-    {
-        foreach ($keys as $key) {
-            if (isset($new[$key]) && $new[$key] !== $old[$key]) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Get the processed line with the initialized options.
      *
      * @param string $line the line
@@ -637,17 +616,15 @@ final class SequenceMatcher
      */
     private function processLineWithOptions(string $line): string
     {
-        if ($this->options['ignoreWhitespace']) {
-            static $whitespaces = [' ', "\t", "\r", "\n"];
-
-            $line = str_replace($whitespaces, '', $line);
+        if ($this->options->ignoreWhitespace) {
+            $line = str_replace(self::WHITESPACE_CHARS, '', $line);
         }
 
-        if ($this->options['ignoreCase']) {
+        if ($this->options->ignoreCase) {
             $line = strtolower($line);
         }
 
-        if ($this->options['ignoreLineEnding']) {
+        if ($this->options->ignoreLineEnding) {
             $line = rtrim($line, "\r\n");
         }
 
@@ -672,7 +649,7 @@ final class SequenceMatcher
             $this->b2j[$char] ??= [];
 
             if (
-                $length >= $this->options['lengthLimit']
+                $length >= $this->options->lengthLimit
                 && \count($this->b2j[$char]) * 100 > $length
                 && $char !== self::APPENDED_HELPER_LINE
             ) {
