@@ -660,8 +660,8 @@ final class SequenceMatcher
      */
     private function chainB(): static
     {
-        $this->at = array_map([$this, 'processLineWithOptions'], $this->a);
-        $this->bt = array_map([$this, 'processLineWithOptions'], $this->b);
+        $this->at = array_map($this->processLineWithOptions(...), $this->a);
+        $this->bt = array_map($this->processLineWithOptions(...), $this->b);
 
         $length = \count($this->bt);
         $this->b2j = [];
